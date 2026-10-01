@@ -1,0 +1,1164 @@
+<title>寵物健康醫療網原型</title>
+<style>
+  :root{
+    --accent:#00B2A9; --accent-dark:#00877F; --ink:#1a1a1a; --muted:#6a6a6a; --faint:#9a9a9a;
+    --line:#e8e8e8; --surface:#f5f5f6; --bg:#ffffff; --pill:#f0f0f0; --pill-ink:#6a6a6a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#eef1f0;}
+  #app{width:100%;background:var(--bg);}
+  .wrap{width:100%;max-width:1440px;margin:0 auto;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Microsoft JhengHei',sans-serif;color:var(--ink);}
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{color:var(--accent-dark);text-decoration:underline;}
+  h1,h2,h3{text-wrap:balance;}
+  .section{padding:40px 64px 0;}
+  .section-title{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+  .section-title h2{font-size:20px;margin:0;white-space:nowrap;}
+  .section-title .rule{flex:1;height:1px;background:var(--line);}
+  .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
+  .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;}
+  .card{border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;background:#fff;}
+  .card-img{background:var(--surface);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:#b3b3b3;}
+  .card-img.sq{aspect-ratio:1/1;}
+  .card-img.feature{aspect-ratio:4/3;}
+  .card-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+  .card-title{font-size:15px;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .card-meta{font-size:12px;color:var(--faint);}
+  .tag{padding:6px 14px;border-radius:16px;font-size:12px;background:var(--pill);border:1px solid #e0e0e0;color:var(--pill-ink);display:inline-block;}
+  .tag.clickable{cursor:pointer;}
+  .tag.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .btn-primary{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px 32px;font-size:15px;font-weight:600;cursor:pointer;}
+  .btn-outline{border:1px solid #dcdcdc;background:#fff;border-radius:6px;padding:12px 32px;font-size:14px;color:#4a4a4a;cursor:pointer;}
+  .input{border:1px solid #dcdcdc;border-radius:6px;padding:12px 14px;font-size:14px;font-family:inherit;width:100%;}
+  select.input{cursor:pointer;}
+  table.ref{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;}
+  table.ref thead tr{background:var(--accent-dark);color:#fff;}
+  table.ref th,table.ref td{padding:12px 16px;text-align:left;}
+  table.ref tbody tr{border-top:1px solid #eee;}
+  .table-wrap{border:1px solid #e5e5e5;border-radius:8px;overflow-x:auto;}
+  .group-cell{background:#f7fbfb;font-weight:700;vertical-align:middle;white-space:nowrap;}
+  table.ref td,table.ref th{white-space:nowrap;}
+  .center-title{text-align:center;padding:48px 64px 0;}
+  .center-title h1{font-size:32px;margin:0;}
+  .breadcrumb{padding:24px 64px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--faint);flex-wrap:wrap;}
+  .breadcrumb a{color:var(--faint);}
+  .breadcrumb a:hover{color:var(--accent);}
+  .breadcrumb .current{color:#4a4a4a;}
+  .dropdown{position:relative;}
+  .dropdown-menu{position:absolute;top:calc(100% + 18px);left:0;background:#fff;border:1px solid #eee;border-radius:8px;box-shadow:0 12px 28px rgba(0,0,0,.12);min-width:172px;padding:8px 0;z-index:60;}
+  .dropdown-item{padding:10px 20px;font-size:14px;white-space:nowrap;cursor:pointer;display:flex;align-items:center;color:#4a4a4a;}
+  .dropdown-item:hover{background:#f7fbfb;}
+  .dropdown-item.active{color:var(--accent-dark);font-weight:600;}
+  .nav-item{cursor:pointer;}
+  .nav-item:hover{color:var(--accent);}
+  .nav-item.disabled{color:#c7c7c7;cursor:default;}
+  .nav-item.disabled:hover{color:#c7c7c7;}
+  .header{width:100%;height:70px;background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:100;}
+  .header nav{display:flex;align-items:center;gap:26px;font-size:14px;}
+  .header .brand{display:flex;align-items:center;gap:36px;}
+  .header .brand img{height:34px;display:block;cursor:pointer;}
+  .footer{padding:48px 64px 32px;border-top:1px solid #eee;}
+  .footer-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:40px;}
+  .footer-col-title{font-size:14px;font-weight:700;margin-bottom:16px;}
+  .footer-links{display:flex;flex-direction:column;gap:12px;}
+  .footer-links a{color:#6a6a6a;font-size:13px;}
+  .footer-bottom{margin-top:48px;padding-top:24px;border-top:1px solid #eee;font-size:12px;color:#9a9a9a;line-height:1.7;}
+  .filter-box{border:1px solid #dcdcdc;border-radius:6px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:#fff;cursor:pointer;user-select:none;}
+  .filter-box .label{color:#9a9a9a;margin-right:8px;}
+  .pagination{display:flex;align-items:center;justify-content:center;gap:8px;padding:40px 0;}
+  .pagination button{width:32px;height:32px;border-radius:6px;border:none;font-size:14px;cursor:pointer;background:none;color:#4a4a4a;}
+  .pagination button.active{background:var(--accent);color:#fff;}
+  .pagination .arrow{background:none;border:none;color:#9a9a9a;font-size:16px;cursor:pointer;}
+  .dots{display:flex;justify-content:center;gap:6px;margin-top:8px;}
+  .dot{width:16px;height:4px;border-radius:2px;cursor:pointer;display:inline-block;background:#e0e0e0;}
+  .dot.active{background:#1a1a1a;}
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:6px;font-size:14px;z-index:999;opacity:0;transition:opacity .25s;pointer-events:none;font-family:-apple-system,sans-serif;}
+  .toast.show{opacity:1;}
+  .video-promo{background:#b3181f;border-radius:12px;display:flex;align-items:center;overflow:hidden;color:#fff;}
+  .video-promo .thumb{width:200px;height:200px;flex-shrink:0;background:#8a1218;display:flex;align-items:center;justify-content:center;}
+  .video-promo .body{flex:1;padding:0 32px;}
+  .video-promo .eyebrow{font-size:12px;background:rgba(255,255,255,.16);display:inline-flex;padding:4px 12px;border-radius:4px;margin-bottom:12px;}
+  .video-promo .cta{margin:0 32px;background:#fff;color:#b3181f;font-size:13px;font-weight:700;padding:10px 20px;border-radius:6px;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+  @media (prefers-reduced-motion: reduce){ .toast{transition:none;} }
+</style>
+
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+
+/* ---------- icons ---------- */
+function iconImg(size){size=size||28;return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="#b3b3b3" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';}
+function iconChevron(){return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';}
+function iconChevronSm(){return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';}
+function iconCrumb(){return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#c0c0c0" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>';}
+function iconSearch(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a4a4a" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>';}
+function iconFb(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="#9a9a9a"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12Z"/></svg>';}
+function iconIg(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9a9a" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>';}
+function wave(){return '<svg width="72" height="16" viewBox="0 0 72 16" style="margin-top:8px"><path d="M2 8 Q 11 2 20 8 T 38 8 T 56 8 T 70 8" stroke="#00B2A9" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';}
+function iconShareSm(){return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9"/></svg>';}
+function iconClockSm(){return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>';}
+function iconPlay(){return '<svg width="44" height="44" viewBox="0 0 24 24" fill="rgba(255,255,255,.9)"><circle cx="12" cy="12" r="11" fill="rgba(255,255,255,.2)"/><path d="M10 8l6 4-6 4V8z"/></svg>';}
+function videoCard(title){
+  var ytUrl = 'https://www.youtube.com/@獸醫療心室';
+  return '<div>'+
+    '<div style="position:relative;aspect-ratio:16/9;background:#3a3a3a;border-radius:8px;display:flex;align-items:center;justify-content:center;">'+
+      iconPlay()+
+      '<div style="position:absolute;bottom:10px;left:10px;display:flex;gap:8px;">'+
+        '<span style="width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;">'+iconShareSm()+'</span>'+
+        '<span style="width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;">'+iconClockSm()+'</span>'+
+      '</div>'+
+      '<div data-action="confirmExternal" data-arg="'+ytUrl+'|'+title+'" style="position:absolute;bottom:10px;right:10px;background:#e02020;color:#fff;font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;">'+
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>Watch on YouTube'+
+      '</div>'+
+    '</div>'+
+    '<div class="card-title" style="margin-top:10px;font-size:15px;">'+title+'</div>'+
+  '</div>';
+}
+var LOGO = 'data:image/png;base64,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';
+
+/* ---------- data ---------- */
+var PET_HEALTH_ITEMS = ['狗狗健康','貓咪健康','鳥類健康','兔子健康','其他寵物','安寧照護','寵物年齡換算','院所＆專家專欄'];
+var MEDICAL_ITEMS = [
+  {label:'收費標準', nav:'feeStandard'},
+  {label:'檢驗數值', nav:'labValues'},
+  {label:'寵物保險', nav:'petInsurance'},
+  {label:'院所查詢', nav:'clinicList'},
+  {label:'動物用藥查詢', nav:'drugSearch'},
+  {label:'合法寵物業者', external:true, url:'https://www.pet.gov.tw/Web/BusinessList.aspx'},
+  {label:'申辦寵物登記', external:true, url:'https://www.pet.gov.tw/Web/O202.aspx'}
+];
+var ACTIVITY_ITEMS = [
+  {label:'市集活動', nav:'eventList', category:'市集活動'},
+  {label:'寵物展覽', nav:'eventList', category:'寵物展覽'},
+  {label:'寵物友善', nav:'eventList', category:'寵物友善'},
+  {label:'認養活動', nav:'eventList', category:'認養活動'},
+  {label:'課程講座', nav:'eventList', category:'課程講座'},
+  {label:'補助申請', nav:'eventList', category:'補助申請'},
+  {label:'浪浪找新家', external:true, url:'https://www.pet.gov.tw/AnimalApp/AnnounceMent_Announce.aspx'}
+];
+var EVENT_CATEGORIES = { '活動好康':29, '市集活動':6, '寵物展覽':5, '寵物友善':6, '認養活動':2, '課程講座':4, '補助申請':6 };
+var EVENT_CATEGORY_LIST = ['活動好康','市集活動','寵物展覽','寵物友善','認養活動','課程講座','補助申請'];
+
+/* 影音專區：影片標題/獸醫師為截圖轉錄真實內容；YouTube 連結為佔位網址，待內容團隊提供各支影片真實連結 */
+var VIDEO_SECTIONS = [
+  { title:'新手飼主', videos:[
+    '喵星人好難懂？破解幼貓照護迷思、新手飼主輕鬆上手！Feat. 吳乃聖獸醫師',
+    '幼犬皮膚 SOS！獸醫師照護指南 Feat. 謝明瑞獸醫師',
+    '新手爸媽必看！幼齡毛孩成長照護全解析 Feat. 許傳忠獸醫師'
+  ]},
+  { title:'高齡寵物', videos:[
+    '獸醫經驗談：學習告別的勇氣 Feat.李繼忠獸醫師',
+    '老貓飼主必修課：腎臟病的正確照護 Feat.鍾昇樺獸醫師',
+    '老齡寵物這樣顧，陪伴更長久！Feat.林郁玟獸醫師',
+    '動起來才健康！寵物居家基礎復健 Feat. 林哲宇獸醫師'
+  ]},
+  { title:'寵物健檢', videos:[
+    '這錢省不得！寵物健檢必要項目 Feat.謝明瑞獸醫師',
+    '健檢無價！解析寵物健檢重要性 Feat.吳乃聖獸醫師'
+  ]},
+  { title:'毛孩健康', videos:[
+    '吃好喝好、消化才會好！毛孩腸胃照護飲食準則 Feat. 謝明瑞獸醫師',
+    '毛孩腫瘤知多少、事先防範不心慌！ Feat. 李繼忠獸醫師',
+    '吃好喝好、消化才會好！毛孩腸胃照護飲食準則 Feat. 謝明瑞獸醫師',
+    '貓主子說不出口的話，獸醫最知道！ Feat. 黃哲毅獸醫師',
+    '過敏毛孩跟著獸醫這樣顧最安心！！ Feat. 蔡佳凌獸醫師',
+    '毛孩口腔健康照護 還牠清新好口氣！ Feat. 董柏辰獸醫師',
+    '寵物食為天！3分鐘搞懂糧食挑選 Feat. 陳靖艾獸醫師',
+    '分齡照護！結構毛孩不同階段的健康需求 Feat. 王瑋楓獸醫師',
+    '從毛孩行為預見魔鬼病徵 Feat. 施品丞獸醫師',
+    '貓狗最常被忽視的5大疾病 Feat. 許傳忠獸醫師'
+  ]}
+];
+
+/* 關於我們：文案為截圖轉錄真實內容 */
+var ABOUT_VISION_CARDS = [
+  { title:'專科獸醫師諮詢', desc:'感謝提供諮詢的獸醫師，透過臨床經驗分享，讓醫療專業發揮無限影響力！' },
+  { title:'提供專業知識', desc:'一站式寵物健康平台，彙整國內外最新寵物健康資訊，陪伴寵物健康成長！' },
+  { title:'最新產業動態', desc:'即時更新寵物相關活動資訊與產業動態，讓產品得到最佳曝光效益！' }
+];
+var ABOUT_PARTNERS = ['ROYAL CANIN','IAVC','GITEX ASIA Singapore','GITEX Digi_Health Thailand','MEDICAL TAIWAN'];
+var ARTICLE_CONFIG = {
+  '狗狗健康': {tool:'狗狗疾病查詢', desc:'狗狗出現症狀但不確定是什麼問題？使用疾病查詢功能，幫助您找到相關文章，釐清可能的原因、治療、保健以及預防等資訊。'},
+  '貓咪健康': {tool:'貓咪疾病查詢', desc:'貓咪出現症狀但不確定是什麼問題？使用疾病查詢功能，幫助您找到相關文章，釐清可能的原因、治療、保健以及預防等資訊。'},
+  '兔子健康': {tool:'兔子疾病查詢', desc:'兔子出現症狀但不確定是什麼問題？使用疾病查詢功能，幫助您找到相關文章，釐清可能的原因、治療、保健以及預防等資訊。'},
+  '鳥類健康': {tool:'鳥類疾病查詢', desc:'鳥類出現症狀但不確定是什麼問題？使用疾病查詢功能，幫助您找到相關文章，釐清可能的原因、治療、保健以及預防等資訊。'},
+  '其他寵物': {tool:'其他寵物疾病查詢', desc:'魚類、爬蟲、囓齒類等其他寵物出現異常但不確定是什麼問題？使用疾病查詢功能，幫助您找到相關文章，釐清可能的原因、治療、保健以及預防等資訊。'},
+  '安寧照護': {tool:'安寧照護資源查詢', desc:'面對寵物的老化與臨終照護，不確定該怎麼準備？使用資源查詢功能，幫助您找到相關文章，釐清照護方式、心理準備以及後事安排等資訊。'}
+};
+var DRUGS = ['新美乳膏','安痛炎軟膏','喜療妥凝膠','億菲黴素','沛可斯汀'];
+var CLINIC_REGIONS = ['選擇地區','台北市','新北市','台中市','高雄市'];
+var CLINIC_SERVICES = ['選擇項目','內科','外科','洗牙','疫苗接種','健檢'];
+var CLINIC_PETS = ['選擇寵物類型','狗狗','貓咪','兔子','鳥類'];
+var CAT_ROWS = [
+  {stage:'幼貓',age:'0-6 個月',human:'0-10 歲'},{stage:'青少貓',age:'7 個月-2 歲',human:'12-24 歲'},
+  {stage:'成貓',age:'3-6 歲',human:'28-40 歲'},{stage:'壯年貓',age:'7-10 歲',human:'44-56 歲'},
+  {stage:'中老年貓',age:'11-14 歲',human:'60-72 歲'},{stage:'老年貓',age:'15 歲以上',human:'76 歲以上'}
+];
+var DOG_ROWS = [
+  {age:'1 歲',small:'15',medium:'15',large:'14'},{age:'2 歲',small:'24',medium:'24',large:'22'},
+  {age:'3 歲',small:'28',medium:'28',large:'31'},{age:'4 歲',small:'32',medium:'32',large:'38'},
+  {age:'5 歲',small:'36',medium:'36',large:'45'},{age:'6 歲',small:'40',medium:'42',large:'50'},
+  {age:'8 歲',small:'48',medium:'51',large:'61'},{age:'10 歲',small:'56',medium:'60',large:'81'}
+];
+var CITY_LABELS = ['台北市','新北市','桃園市','台中市','台南市','高雄市'];
+var CITY_KEYS = ['taipei','newTaipei','taoyuan','taichung','tainan','kaohsiung'];
+var RAW_TABLE_1 = [
+  ['掛號費','一般掛號費','300','150-250','300','200','初診300／複診200','200'],
+  ['掛號費','急診掛號費（非門診時間）','500','300-500','－','500','500','500'],
+  ['掛號費','假日診療費','400','300-1200','2000','1000','3000','－'],
+  ['診療費','一般診療費','300','200-500','800-1500(依科別)','300','2000/初診','500'],
+  ['診療費','專科診療費','1000','500-1200','300-800(依科別)','1000/初診','500-2000','700'],
+  ['診療費','往診費','600元/次','500元/次','800元/次','1000元/次','2000元起','800元/次'],
+  ['診療費','急診診療費（夜間加成）','1200元/次','900元/次','800元/次','2000元','3000元/夜間','500元/夜間']
+];
+var RAW_TABLE_2 = [
+  ['觸診檢查','一般理學檢查','400','200-350','300','500','500','500'],
+  ['觸診檢查','皮毛外觀檢查','500','300-500','500','500','800','500'],
+  ['觸診檢查','眼底檢查','500','300-500','500','500','800','500'],
+  ['血液檢查','全血球計數（貧血篩檢）','400','300-700','500','500','500','800'],
+  ['血液檢查','血液生化檢查（肝腎功能）','800','600-1200','1000','1000','1200','1000'],
+  ['血液檢查','電解質檢查','500','500-700','500','800','800','500'],
+  ['超音波檢查','一般腹腔超音波','1500','1200-2500','2000','2000','2500','2000'],
+  ['超音波檢查','心臟超音波','3000','2500-4000','3500','3500','4000','3500'],
+  ['X光費用','單張X光','400','300-800','500','500','500','500'],
+  ['X光費用','多張X光（2-4張）','1000','500-1500','1200','1200','1500','1200'],
+  ['X光費用','齒科X光','500','400-800','600','600','800','600'],
+  ['其他檢查','電腦斷層（不含麻醉）','15000','12000-25000','20000','15000','25000','20000'],
+  ['其他檢查','心電圖（EKG）','800','500-1200','1000','1000','1200','1000'],
+  ['其他檢查','尿液常規分析','300','300-500','500','500','800','500']
+];
+var RAW_TABLE_3 = [
+  ['處置費','洗牙（含麻醉）','6000','4000-8000','5000','6000','7000','6000'],
+  ['處置費','外傷縫合處理','1500','1000-2500','1500','1500','2000','1500'],
+  ['處置費','拔牙（單顆）','1500','800-2000','1200','1500','2000','1500'],
+  ['處置費','灌腸處置','800','500-1200','800','800','1000','800'],
+  ['手術費','結紮手術（公）','3000','1500-4000','2500','3000','3500','3000'],
+  ['手術費','結紮手術（母）','5000','3000-6000','4500','5000','6000','5000'],
+  ['手術費','剖腹產','8000','6000-12000','8000','8000','10000','9000'],
+  ['手術費','腫瘤切除','6000','4000-10000','6000','6000','8000','7000'],
+  ['住院處置','住院處置費（每日）','1000','700-1500','1000','1000','1200','1000'],
+  ['住院處置','化療針劑費','10000','7000-13000','10000','10000','12000','10000'],
+  ['住院處置','生長激素注射','5000','3000-8000','5000','5000','6000','5000']
+];
+var RAW_TABLE_4 = [
+  ['疫苗接種','犬八合一疫苗（DHPPi）','1200','800-1200','1000','1000','1200','1000'],
+  ['疫苗接種','犬十合一疫苗','1300','900-1300','1100','1100','1300','1100'],
+  ['疫苗接種','貓三合一疫苗','1000','800-1000','900','900','1000','900'],
+  ['疫苗接種','狂犬病疫苗','500','300-500','400','400','600','400'],
+  ['疫苗接種','五合一混合疫苗','1200','800-1200','1000','1000','1200','1000'],
+  ['疫苗接種','貓白血病疫苗','1500','1200-2000','1500','1500','1800','1500'],
+  ['疫苗接種','心絲蟲預防注射','1200','900-1500','1200','1200','1400','1200'],
+  ['疫苗接種','晶片植入（含登記）','1500','800-1500','1300','1200','1500','1500']
+];
+var RAW_TABLE_5 = [
+  ['一般病房','小型犬貓（5-10公斤）','750','300-800','700','500','800','500'],
+  ['一般病房','中型犬（10-20公斤）','1100','500-1200','1000','1000','1200','1000'],
+  ['一般病房','大型犬（20公斤以上）','1500','800-1500','1300','1000','1500','1200'],
+  ['加護病房','加護病房（每日）','3500','2000-4000','3000','2500','3500','3000'],
+  ['加護病房','特殊照護費（每日）','500','300-1300','500','500','800','500']
+];
+var RAW_TABLE_6 = [
+  ['安寧照護','居家安寧往診','2600','1000-3000','2000','2000','3000','2500'],
+  ['安寧照護','安寧鎮靜處置','4000','1500-5000','3500','3500','5000','4000'],
+  ['安寧照護','遺體火化（小型）','3000','2000-5000','3000','3000','4000','3000'],
+  ['其他項目','血液PCR送檢','5000','3000-8000','5000','5000','6000','5000'],
+  ['其他項目','皮膚細菌培養','2000','1000-2500','1800','1800','2200','2000'],
+  ['其他項目','醫療廢棄物處理費','500','300-800','500','500','800','500']
+];
+function groupedTable(raw){
+  var thead = '<tr><th style="width:100px;"></th><th>項目</th>'+CITY_LABELS.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+  var tbody = '', i = 0;
+  while (i < raw.length) {
+    var groupName = raw[i][0];
+    var groupRows = [];
+    while (i < raw.length && raw[i][0] === groupName) { groupRows.push(raw[i]); i++; }
+    groupRows.forEach(function(row, idx){
+      tbody += '<tr>';
+      if (idx === 0) tbody += '<td class="group-cell" rowspan="'+groupRows.length+'">'+groupName+'</td>';
+      tbody += '<td>'+row[1]+'</td>'+row.slice(2).map(function(v){return '<td>'+v+'</td>';}).join('')+'</tr>';
+    });
+  }
+  return '<div class="table-wrap"><table class="ref"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+}
+var CHEM_ROWS = [
+  {name:'ALT（丙胺酸轉胺酶）',unit:'U/L',dog:'10-109',cat:'12-130'},
+  {name:'Amylase（澱粉酶）',unit:'U/L',dog:'500-1500',cat:'500-1200'},
+  {name:'Alk phos／ALKP（鹼性磷酸酶）',unit:'U/L',dog:'23-212',cat:'14-111'},
+  {name:'AST（天門冬胺酸轉胺酶）',unit:'U/L',dog:'0-50',cat:'0-48'},
+  {name:'CK（肌酸激酶）',unit:'U/L',dog:'52-306',cat:'69-314'},
+  {name:'GGT（γ-麩胺醯轉肽酶）',unit:'U/L',dog:'0-11',cat:'0-4'},
+  {name:'LDH（乳酸脫氫酶）',unit:'U/L',dog:'40-245',cat:'63-273'},
+  {name:'Lipase（脂肪酶）',unit:'U/L',dog:'200-1800',cat:'0-83'},
+  {name:'Bilirubin（總膽紅素）',unit:'mg/dL',dog:'0-0.3',cat:'0-0.3'},
+  {name:'Calcium（鈣）',unit:'mg/dL',dog:'9.1-11.7',cat:'8.7-11.7'},
+  {name:'Chloride（氯）',unit:'mEq/L',dog:'108-119',cat:'112-129'},
+  {name:'Cholesterol（膽固醇）',unit:'mg/dL',dog:'135-278',cat:'71-156'},
+  {name:'Creatinine（肌酸酐）',unit:'mg/dL',dog:'0.5-1.7',cat:'0.9-2.2'},
+  {name:'Glucose（血糖）',unit:'mg/dL',dog:'76-119',cat:'60-120'},
+  {name:'Magnesium（鎂）',unit:'mg/dL',dog:'1.6-2.4',cat:'1.7-2.6'},
+  {name:'Phosphorus（磷）',unit:'mg/dL',dog:'2.9-6.2',cat:'3.4-8.0'},
+  {name:'Potassium（鉀）',unit:'mEq/L',dog:'3.9-5.1',cat:'3.7-6.1'},
+  {name:'Total Protein（總蛋白）',unit:'g/dL',dog:'5.4-7.5',cat:'6.0-7.9'},
+  {name:'Albumin（白蛋白）',unit:'g/dL',dog:'2.3-3.1',cat:'2.8-3.9'},
+  {name:'Globulin（球蛋白）',unit:'g/dL',dog:'2.7-4.4',cat:'2.6-5.1'},
+  {name:'Sodium（鈉）',unit:'mEq/L',dog:'142-152',cat:'146-156'},
+  {name:'Urea Nitrogen／BUN（尿素氮）',unit:'mg/dL',dog:'8-28',cat:'19-34'},
+  {name:'SDMA（腎臟早期指標）',unit:'µg/dL',dog:'0-14',cat:'0-14'}
+];
+var BLOOD_GAS_ROWS = [
+  {name:'pH',unit:'',dog:'7.31-7.42',cat:'7.24-7.40'},
+  {name:'HCO₃（碳酸氫根）',unit:'mEq/L',dog:'17-24',cat:'17-24'},
+  {name:'pCO₂（二氧化碳分壓）',unit:'mmHg',dog:'29-42',cat:'29-42'},
+  {name:'pO₂（氧分壓）',unit:'mmHg',dog:'85-95',cat:'85-95'}
+];
+var CBC_ROWS = [
+  {name:'PCV（紅血球比容）',unit:'%',dog:'35-57',cat:'30-45'},
+  {name:'Hgb（血紅素）',unit:'g/dL',dog:'11.9-18.9',cat:'9.8-15.4'},
+  {name:'RBCs（紅血球數）',unit:'×10⁶/mcL',dog:'4.95-7.87',cat:'5.0-10.0'},
+  {name:'Reticulocytes（網狀紅血球）',unit:'%',dog:'0-1.0',cat:'0-0.6'},
+  {name:'MCV（平均紅血球容積）',unit:'fL',dog:'66-77',cat:'39-55'},
+  {name:'MCH（平均紅血球血色素）',unit:'pg',dog:'21.0-26.2',cat:'13-17'},
+  {name:'MCHC（平均紅血球血色素濃度）',unit:'g/dL',dog:'32.0-36.3',cat:'30-36'},
+  {name:'Platelets（血小板數值）',unit:'×10⁴/mcL',dog:'211-621',cat:'300-800'},
+  {name:'MPV（平均血小板容積）',unit:'fL',dog:'8.1-10.1',cat:'12-18'},
+  {name:'WBCs（白血球數值）',unit:'×10³/mcL',dog:'5.0-14.1',cat:'5.5-19.5'},
+  {name:'Neutrophils（嗜中性白血球）',unit:'%',dog:'58-85',cat:'45-64'},
+  {name:'Lymphocytes（淋巴球細胞）',unit:'%',dog:'8-21',cat:'27-36'},
+  {name:'Monocytes（單核細胞）',unit:'%',dog:'2-10',cat:'0-5'},
+  {name:'Eosinophils（嗜酸性白血球）',unit:'%',dog:'0-9',cat:'0-4'},
+  {name:'Basophils（嗜鹼性白血球）',unit:'%',dog:'0-1',cat:'0-1'},
+  {name:'Plasma Proteins（血漿蛋白）',unit:'g/dL',dog:'6.0-7.5',cat:'6.0-7.9'},
+  {name:'Plasma Fibrinogen（纖維蛋白原）',unit:'mg/dL',dog:'150-300',cat:'150-300'}
+];
+var RECTAL_TEMP_ROWS = [
+  {pet:'貓',temp:'38.1-39.2'},
+  {pet:'狗',temp:'37.5-39.2'},
+  {pet:'兔',temp:'38.6-40.1'}
+];
+var INS_COMPANIES = [
+  {name:'國泰產險寵物險', plans:['基礎方案','進階方案','完整方案']},
+  {name:'明台產物寵物綜合保險', plans:['喜愛毛孩','熱愛毛孩','醉愛毛孩']},
+  {name:'富邦毛起來愛4.0', plans:['S4方案','M4方案','L4方案']},
+  {name:'易安網旺旺友聯', plans:['方案一','方案二','方案三']}
+];
+var INS_ROWS = [
+  {label:'投保年齡限制', vals:[
+    '初次投保：8週~6歲5個月／最高續保：14歲5個月(基礎)、9歲5個月(進階/完整)','初次投保：8週~6歲5個月／最高續保：14歲5個月(基礎)、9歲5個月(進階/完整)','初次投保：8週~6歲5個月／最高續保：14歲5個月(基礎)、9歲5個月(進階/完整)',
+    '貓：8週~8歲；狗：8週~8歲；續保至8歲','貓：8週~8歲；狗：8週~8歲；續保至8歲','貓：8週~8歲；狗：8週~8歲；續保至8歲',
+    '首保2個月至未滿8歲，續保可至未滿15歲','首保2個月至未滿8歲，續保可至未滿15歲','首保2個月至未滿8歲，續保可至未滿15歲',
+    '首保滿2個月且未滿8歲6個月，續保年齡：無限制','首保滿2個月且未滿8歲6個月，續保年齡：無限制','首保滿2個月且未滿8歲6個月，續保年齡：無限制'
+  ]},
+  {label:'不保犬隻', vals:[
+    '法國鬥牛犬、比特犬、史大佛夏牛頭犬、斯塔福郡鬥牛梗、日本土佐犬、紐波利頓犬、阿根廷杜告犬、巴西菲勒犬、獒犬類等','法國鬥牛犬、比特犬、史大佛夏牛頭犬、斯塔福郡鬥牛梗、日本土佐犬、紐波利頓犬、阿根廷杜告犬、巴西菲勒犬、獒犬類等','法國鬥牛犬、比特犬、史大佛夏牛頭犬、斯塔福郡鬥牛梗、日本土佐犬、紐波利頓犬、阿根廷杜告犬、巴西菲勒犬、獒犬類等',
+    '比特犬、日本土佐犬、紐波利頓犬、阿根廷杜告犬、巴西菲勒犬、獒犬','比特犬、日本土佐犬、紐波利頓犬、阿根廷杜告犬、巴西菲勒犬、獒犬','比特犬、日本土佐犬、紐波利頓犬、阿根廷杜告犬、巴西菲勒犬、獒犬',
+    '巴西菲勒犬、日本土佐犬、比特犬、西藏獒犬、波爾多獒犬、阿根廷杜告犬、紐波利頓犬、鬥牛獒犬、義大利獒犬及其混種犬（詳見官網）','巴西菲勒犬、日本土佐犬、比特犬、西藏獒犬、波爾多獒犬、阿根廷杜告犬、紐波利頓犬、鬥牛獒犬、義大利獒犬及其混種犬（詳見官網）','巴西菲勒犬、日本土佐犬、比特犬、西藏獒犬、波爾多獒犬、阿根廷杜告犬、紐波利頓犬、鬥牛獒犬、義大利獒犬及其混種犬（詳見官網）',
+    '全品種貓狗皆可投保','全品種貓狗皆可投保','全品種貓狗皆可投保'
+  ]},
+  {label:'就醫院所', vals:['不指定','不指定','不指定','不指定','不指定','不指定','指定獸醫院','指定獸醫院','指定獸醫院','指定獸醫院','指定獸醫院','指定獸醫院']},
+  {label:'門診費用', vals:[
+    '－','一年最多3次\n每次最高$1,000（自負額30%）','一年最多5次\n每次最高$1,200（自負額30%）',
+    '每次1千\n每年2次（自負額20%）','每次2千\n每年5次（自負額20%）','每次2千\n每年5次（自負額20%）',
+    '每次最高1千\n總額2千（自負額20%）','每次最高2千\n總額6千（自負額10%）','每次最高2千\n總額1萬（無自負額）',
+    '最高1,700元/次\n保期最高4,250元','最高2,800元/次\n保期最高7,000元','最高3,200元/次\n保期最高8,000元'
+  ]},
+  {label:'住院費用', vals:[
+    '一年最多1次\n每次最高$5,000（自負額30%）','一年最多1次\n每次最高$5,000（自負額30%）','一年最多2次\n每次最高$5,000（自負額30%）',
+    '每次最高5千\n每年1次（自負額20%）','每次最高8千\n每年1次（自負額20%）','每次最高2萬\n每年1次（自負額20%）',
+    '每次最高1萬\n總額2萬（自負額20%）','每次最高2萬\n總額4萬（自負額10%）','每次最高3萬\n總額6萬（無自負額）',
+    '最高8,500元/次\n保期最高17,000元','最高14,000元/次\n保期最高28,000元','最高16,000元/次\n保期最高32,000元'
+  ]},
+  {label:'手術費用', vals:[
+    '一年最多1次\n每次最高2萬（自負額30%）','一年最多1次\n每次最高2萬（自負額30%）','一年最多2次\n每次最高2萬（自負額30%）',
+    '每次1萬\n每年1次（自負額20%）','每次2萬\n每年1次（自負額20%）','每次3萬\n每年1次（自負額20%）',
+    '每次最高1萬\n總額2萬（自負額20%）','每次最高2萬\n總額4萬（自負額10%）','每次最高3萬\n總額6萬（無自負額）',
+    '最高21,250元/次\n保期最高42,500元','最高3.5萬/次\n保期最高7萬','最高4萬/次\n保期最高8萬'
+  ]},
+  {label:'保險期間累積最高賠償', vals:['2.5萬','2.8萬','5.6萬','1.7萬','3.8萬','6萬','4.2萬','8.6萬','13萬','6.8萬','11.2萬','12.8萬']},
+  {label:'寵物侵權責任保險', vals:[
+    '50萬','50萬','50萬',
+    '最高10萬元（須加購，$214/年）','最高10萬元（須加購，$214/年）','最高10萬元（須加購，$214/年）',
+    '100萬','150萬','150萬','100萬','100萬','100萬'
+  ]},
+  {label:'寵物喪葬費用保險', vals:[
+    '最高3千/次','最高5千/次','最高5千/次',
+    '最高5千元（實支實付，須加購，$631/年）','最高5千元（實支實付，須加購，$631/年）','最高5千元（實支實付，須加購，$631/年）',
+    '最高2千','最高3千','最高5千','－','5千','5千'
+  ]},
+  {label:'寵物協尋廣告費用保險', vals:['－','2千','2千','－','－','－','1萬','1萬','1.5萬','2千','2千','2千']},
+  {label:'寵物重新取得費用保險', vals:['－','2千','2千','－','－','－','－','－','－','－','5千','5千']},
+  {label:'飼主住院期間寵物寄宿日額費用保險', vals:[
+    '$800/每日','$1,000/每日','$1,000/每日',
+    '最高2千元/日（實支實付，最多10日）','最高2千元/日（實支實付，最多10日）','最高2千元/日（實支實付，最多10日）',
+    '每日最高500（最多10日）','每日最高500（最多10日）','每日最高1000（最多10日）','－','1千','1千'
+  ]},
+  {label:'因寵物死亡或手術取消旅遊費用保險', vals:[
+    '－','2千','2千',
+    '最高2千元（實支實付，限一次，須加購，$107/年）','最高2千元（實支實付，限一次，須加購，$107/年）','最高2千元（實支實付，限一次，須加購，$107/年）',
+    '－','－','－','－','－','－'
+  ]},
+  {label:'狗首年度保費', vals:['$2,941起','$4,480起','$4,895起','1歲寵物試算$1,841起','1歲寵物試算$3,417起','1歲寵物試算$3,868起','2個月~未滿8歲$3,827起','2個月~未滿8歲$5,305起','2個月~未滿8歲$6,747起','$3,150起','$5,439起','$5,929起']},
+  {label:'貓首年度保費', vals:['$2,941起','$4,480起','$4,895起','1歲寵物試算$1,841起','1歲寵物試算$3,417起','1歲寵物試算$3,868起','2個月~未滿8歲$3,542起','2個月~未滿8歲$4,882起','2個月~未滿8歲$6,274起','$3,150起','$5,439起','$5,929起']}
+];
+var INS_PROS_CONS = [
+  {name:'國泰產險', pros:'不指定獸醫院就診，理賠彈性高、使用便利；基礎方案保費便宜，入門門檻低；可續保至14歲5個月', cons:'各項保障額度偏低；自負額固定為30%，飼主自付比例高；基礎方案無門診保障'},
+  {name:'富邦產險「毛起來愛4.0」', pros:'保障項目完整，醫療總額度與單次理賠上限高；4.0新增協尋廣告費用保障（最高1.5萬）；L4方案提供無自負額選項，理賠更無負擔', cons:'保費偏高；須至指定獸醫院就診，使用限制較多；4.0侵權責任保障上限從200萬調降至150萬'},
+  {name:'台新銀行明台產險', pros:'投保條件寬鬆，不限品種且無禁保犬種；費率相對親民', cons:'醫療總額度與單次理賠上限偏低；僅能續保至8歲，適用年限較短；自負額固定為20%，無免賠選項'},
+  {name:'易安網旺旺友聯保險', pros:'醫療總額度及手術額度為市場最高；無自負額限制＋理賠次數無上限，理賠條件最優；含門診、住院、手術等完整保障', cons:'須至指定獸醫院就診；保費較高（但整體CP值仍高）'}
+];
+var INS_FAQ = [
+  {q:'我不清楚寵物年齡，該怎麼辦？', a:'若是領養或來源不明的毛孩，可至動物醫院請獸醫師協助初步判斷年齡，通常會根據牙齒狀態、體型發育、毛色等綜合研判。保險公司接受由獸醫開立的估齡報告作為保單填寫依據。'},
+  {q:'我不確定寵物品種或混種時，該如何填寫？', a:'混種犬貓可直接填寫「混種犬」或「混種貓」，若外觀接近特定品種，也可備註「疑似某品種」。大多數保險公司對混種毛孩沒有不利條款，但若涉及特定高風險犬種（如：比特犬、獒犬等）仍需留意是否列為除外承保範圍。'},
+  {q:'如何申請「寵物登記證」？', a:'只需帶毛孩至具備合法執照的動物醫院植入晶片，並填寫寵物基本資料，經獸醫通報登記後，由各縣市動保單位核發「寵物登記證」。部分縣市提供電子證明下載，也可現場領取紙本證明。'},
+  {q:'首次投保需要準備哪些資料？', a:'一般投保會需要以下資料：寵物基本資料（年齡、性別、是否絕育、品種）、晶片號碼與登記證明（或晶片證明）、飼主或被保險人身分證明；部分保險方案可能要求體檢報告或最近一次就診紀錄（依個別保險公司規定）。'},
+  {q:'投保一定要附體檢報告嗎？', a:'目前大部分保單對健康寵物皆免附體檢報告。但若寵物年齡偏高、有病史或申請高額保障方案，保險公司可能會要求附上近三個月內的健康證明、就診紀錄或獸醫評估書作為核保參考。'},
+  {q:'被保險人和飼主可以是不同人嗎？', a:'不行，被保險人、要保人、飼主都必須同一人。被保險人須為本國籍，年滿18歲以上具行為能力之自然人。'},
+  {q:'投保期間，如果被保險人把寵物送給朋友，該怎麼辦？', a:'若寵物於保單期間內轉讓給他人照顧，原保險人應主動通知保險公司，辦理「保單被保險人更名」或「契約轉讓」，並視情況補交新飼主資料。若未主動變更，後續發生事故恐影響理賠資格。部分保險公司則需要辦理退保，待轉移至新飼主後才可重新投保。'},
+  {q:'寵物走失需要報警嗎？如何認定走失日期？', a:'雖無強制報案義務，但建議儘速通報警方並取得報案證明，搭配協尋公告、社群貼文等作為「協尋廣告費用」理賠佐證。走失時間以「飼主首次發現寵物遺失之日」為認定基準，並須於30日內提出協尋費用申請。'}
+];
+var INS_SUBSIDIES = [
+  {city:'115年臺北市寵物保險補助', date:'每年自1月1日起受理申請至12月20日止', target:'凡設籍或居留臺北市之飼主名下寵物完成投保（不限於臺北市動物之家認養之動物），並完成寵物登記、絕育、狂犬病預防注射及有效期間內寵物保險保單等申請條件，即可向動保處申請補助。', amount:'依實際投保金額覈實補助，每隻補助上限為3,000元。', link:'https://www.tcapo.gov.taipei/cp.aspx?n=007412E5C1DA2716'},
+  {city:'115年桃園市犬貓保險補助計畫', date:'自115年1月1日至115年12月31日止，或至經費用罄為止', target:'向桃園市動物保護教育園區（含南昌動物保護教育園區及本處合約衛星認養站）認養犬貓，且符合條件者（逾退回期限超過30日、保單內容須含醫療保障、寵物仍在飼養中且已完成絕育及狂犬病疫苗注射）皆可提出補助申請。', amount:'犬貓每隻補助上限新臺幣3,000元整，本補助款係屬鼓勵性質，超過之額度不予補助。', link:'https://animal.tycg.gov.tw/News_Content.aspx?n=8542&s=1602550'},
+  {city:'115年臺中市犬貓安心養寵物保險補助計畫', date:'自公告日起至115年11月10日前完成認養或經費用罄為止，收件截止日為115年12月10日', target:'認養臺中市動物之家犬貓之飼主。認養人須年滿18歲，並於認養日起1個月內備妥資料向臺中市動保處申請補助。', amount:'依動保處公告核實補助', link:'https://www.animal.taichung.gov.tw/3857732/post'},
+  {city:'114年苗栗縣寵物保險補助（115年度尚未公告）', date:'自114年1月1日至114年12月15日止', target:'由苗栗縣認養犬貓完成晶片植入寵物登記飼主。申請人（飼主）自行購買寵物保險，向本所申請寵物保險補助。', amount:'採實支實付，最高補助每隻犬（貓）新臺幣3,000上限額度。', link:'https://animal.miaoli.gov.tw/News_Content.aspx?n=2184&sms=10202&s=820619'}
+];
+var INS_INTRO_CARDS = ['2026國泰產險寵物險方案介紹','2026台新銀行明台產險寵物險方案介紹','2026易安網旺旺友聯寵物保險方案介紹','2026年富邦產險推出「毛起來愛4.0」寵物險專案','華南產險寵物保險（米得寵物保險）方案介紹'];
+function insTableHTML(){
+  var theadCompanies = '<th></th>'+INS_COMPANIES.map(function(c){return '<th colspan="3">'+c.name+'</th>';}).join('');
+  var theadPlans = '<th></th>'+INS_COMPANIES.map(function(c){return c.plans.map(function(p){return '<th>'+p+'</th>';}).join('');}).join('');
+  var linkRow = '<tr><td class="group-cell">方案介紹</td>'+INS_COMPANIES.map(function(){return '<td colspan="3" style="text-align:center;"><a href="#" data-action="stub">完整文章連結</a></td>';}).join('')+'</tr>';
+  var bodyRows = INS_ROWS.map(function(r){
+    return '<tr><td class="group-cell" style="white-space:normal;min-width:160px;">'+r.label+'</td>'+r.vals.map(function(v){return '<td style="white-space:pre-line;min-width:130px;">'+v+'</td>';}).join('')+'</tr>';
+  }).join('');
+  return '<div class="table-wrap"><table class="ref" style="font-size:12px;"><thead><tr>'+theadCompanies+'</tr><tr>'+theadPlans+'</tr></thead><tbody>'+linkRow+bodyRows+'</tbody></table></div>';
+}
+function insCompanyCard(ci){
+  var c = INS_COMPANIES[ci];
+  var base = ci*3;
+  var body = INS_ROWS.map(function(r){
+    var vals = r.vals.slice(base, base+3);
+    var same = vals[0]===vals[1] && vals[1]===vals[2];
+    return '<div style="padding:14px 0;border-top:1px solid #eee;">'+
+      '<div style="text-align:center;font-size:13px;font-weight:700;color:#4a4a4a;margin-bottom:10px;">'+r.label+'</div>'+
+      (same ?
+        '<div style="text-align:center;font-size:13px;color:#4a4a4a;white-space:pre-line;background:#f7fbfb;border-radius:6px;padding:10px;">'+vals[0]+'</div>' :
+        '<div class="grid3" style="gap:8px;">'+vals.map(function(v){return '<div style="text-align:center;font-size:13px;color:#4a4a4a;white-space:pre-line;background:#f7fbfb;border-radius:6px;padding:10px;">'+v+'</div>';}).join('')+'</div>'
+      )+
+    '</div>';
+  }).join('');
+  return '<div style="border:1px solid #e8e8e8;border-radius:10px;padding:24px;margin-bottom:24px;">'+
+    '<h3 style="text-align:center;color:#00877F;font-size:18px;margin:0 0 16px;">'+c.name+'</h3>'+
+    '<div class="grid3" style="gap:8px;">'+c.plans.map(function(p){return '<div style="background:#f5f5f6;border-radius:6px;padding:10px;text-align:center;font-weight:700;font-size:13px;">'+p+'</div>';}).join('')+'</div>'+
+    body+
+    '<div style="margin-top:16px;"><a href="#" data-action="stub" style="display:block;text-align:center;background:#00877F;color:#fff;border-radius:6px;padding:12px;font-size:13px;">完整文章連結</a></div>'+
+  '</div>';
+}
+
+/* ---------- state ---------- */
+var state = {
+  page:'home',
+  headerMenu:null,
+  externalModal:null,
+  articleList:{petType:'狗狗健康', page:1},
+  articleDetail:{toc:0, imgDot:0, petType:'狗狗健康'},
+  clinicList:{open:null, region:CLINIC_REGIONS[0], service:CLINIC_SERVICES[0], pet:CLINIC_PETS[0], page:1},
+  clinicDetail:{photo:0},
+  drugSearch:{page:1, articleDot:0},
+  searchResults:{type:'article', keyword:'', page:1},
+  drugDetail:{index:0, bannerDot:0, articleDot:0},
+  authorPage:{page:1, bannerDot:0},
+  authorDetail:{page:1},
+  ageCalc:{petType:'狗', age:3, showResult:false, result:0},
+  labValues:{page:1},
+  medicalHub:{page:1},
+  eventList:{page:1, category:'活動好康'},
+  industryHub:{page:1}
+};
+
+/* ---------- helpers ---------- */
+function repeat(fn,n){var a=[];for(var i=0;i<n;i++)a.push(fn(i));return a.join('');}
+function card(navTo, params, opts){
+  opts = opts||{};
+  var navAttr = navTo ? ' data-nav="'+navTo+'" data-params=\''+JSON.stringify(params||{})+'\'' : ' style="cursor:default;"';
+  var imgCls = opts.imgCls || '';
+  var title = opts.title || '文章標題文章標題文章標題文章標題';
+  var titleStyle = opts.titleStyle || '';
+  var meta = opts.meta || '2026.07.15';
+  return '<div class="card"'+navAttr+'><div class="card-img '+imgCls+'">'+iconImg(opts.iconSize)+'</div><div class="card-body"><div class="card-title" style="'+titleStyle+'">'+title+'</div><div class="card-meta">'+meta+'</div></div></div>';
+}
+function toast(msg){
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+}
+function refTable(headers, rows, cols){
+  var thead = '<tr>'+headers.map(function(hd){return '<th>'+hd+'</th>';}).join('')+'</tr>';
+  var tbody = rows.map(function(r){
+    return '<tr>'+cols.map(function(c){return '<td>'+r[c]+'</td>';}).join('')+'</tr>';
+  }).join('');
+  return '<div class="table-wrap"><table class="ref"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+}
+function pagination(current, path){
+  var pages=[1,2,3,4,50];
+  var btns = pages.map(function(n){
+    return '<button class="'+(current===n?'active':'')+'" data-action="setPage" data-arg="'+path+':'+n+'">'+n+'</button>';
+  }).join('');
+  return '<div class="pagination"><button class="arrow" data-action="setPage" data-arg="'+path+':'+Math.max(1,current-1)+'">‹</button>'+btns+'<button class="arrow" data-action="setPage" data-arg="'+path+':'+Math.min(50,current+1)+'">›</button></div>';
+}
+function dots(count, active, action){
+  return '<div class="dots">'+repeat(function(i){return '<span class="dot'+(active===i?' active':'')+'" data-action="'+action+'" data-arg="'+i+'"></span>';}, count)+'</div>';
+}
+function setPath(path, value){
+  var parts = path.split('.');
+  var obj = state;
+  for(var i=0;i<parts.length-1;i++) obj = obj[parts[i]];
+  obj[parts[parts.length-1]] = value;
+}
+
+/* ---------- header / footer ---------- */
+function renderHeader(){
+  var petOpen = state.headerMenu==='petHealth';
+  var medOpen = state.headerMenu==='medical';
+  var actOpen = state.headerMenu==='activity';
+  var petItems = PET_HEALTH_ITEMS.map(function(label){
+    var navTo = 'articleList', params = {petType:label};
+    if(label==='寵物年齡換算'){ navTo='ageCalc'; params={}; }
+    if(label==='院所＆專家專欄'){ navTo='authorPage'; params={}; }
+    return '<div class="dropdown-item" data-nav="'+navTo+'" data-params=\''+JSON.stringify(params)+'\'>'+label+'</div>';
+  }).join('');
+  var medItems = MEDICAL_ITEMS.map(function(it){
+    if(it.external){
+      return '<div class="dropdown-item" data-action="confirmExternal" data-arg="'+it.url+'|'+it.label+'">'+it.label+' <span style="margin-left:4px;color:#b0b0b0;">↗</span></div>';
+    }
+    return '<div class="dropdown-item" data-nav="'+it.nav+'">'+it.label+'</div>';
+  }).join('');
+  var actItems = ACTIVITY_ITEMS.map(function(it){
+    if(it.external){
+      return '<div class="dropdown-item" data-action="confirmExternal" data-arg="'+it.url+'|'+it.label+'">'+it.label+' <span style="margin-left:4px;color:#b0b0b0;">↗</span></div>';
+    }
+    return '<div class="dropdown-item" data-nav="'+it.nav+'" data-params=\''+JSON.stringify({category:it.category})+'\'>'+it.label+'</div>';
+  }).join('');
+  return '<div class="header">'+
+      '<div class="brand">'+
+        '<img src="'+LOGO+'" alt="logo" data-nav="home">'+
+        '<nav>'+
+          '<span class="nav-item" data-nav="home">首頁</span>'+
+          '<div class="dropdown">'+
+            '<span class="nav-item" data-nav="hub" style="display:flex;align-items:center;gap:4px;'+(petOpen?'color:#00A79D;font-weight:600;':'')+'">寵物健康 <span data-action="toggleHeaderMenu" data-arg="petHealth" style="display:flex;">'+iconChevron()+'</span></span>'+
+            (petOpen?'<div class="dropdown-menu">'+petItems+'</div>':'')+
+          '</div>'+
+          '<div class="dropdown">'+
+            '<span class="nav-item" data-nav="medicalHub" style="display:flex;align-items:center;gap:4px;'+(medOpen?'color:#00A79D;font-weight:600;':'')+'">就醫資訊 <span data-action="toggleHeaderMenu" data-arg="medical" style="display:flex;">'+iconChevron()+'</span></span>'+
+            (medOpen?'<div class="dropdown-menu">'+medItems+'</div>':'')+
+          '</div>'+
+          '<div class="dropdown">'+
+            '<span class="nav-item" data-nav="eventList" style="display:flex;align-items:center;gap:4px;'+(actOpen?'color:#00A79D;font-weight:600;':'')+'">活動好康 <span data-action="toggleHeaderMenu" data-arg="activity" style="display:flex;">'+iconChevron()+'</span></span>'+
+            (actOpen?'<div class="dropdown-menu">'+actItems+'</div>':'')+
+          '</div>'+
+          '<span class="nav-item" data-nav="industryHub">產業動態</span>'+
+          '<span class="nav-item" data-nav="videoHub">影音專區</span>'+
+          '<span class="nav-item" data-nav="aboutUs">關於我們</span>'+
+        '</nav>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:22px;font-size:14px;color:#4a4a4a;">'+iconSearch()+'<span>登入 / 註冊</span></div>'+
+    '</div>';
+}
+function renderFooter(){
+  function col(title, links){
+    return '<div><div class="footer-col-title">'+title+'</div><div class="footer-links">'+links.map(function(l){
+      return l==='服務條款' ? '<a href="#" data-nav="termsOfService">'+l+'</a>' : '<a href="#" data-action="stub">'+l+'</a>';
+    }).join('')+'</div></div>';
+  }
+  return '<div class="footer">'+
+    '<img src="'+LOGO+'" alt="logo" style="height:30px;display:block;margin-bottom:32px;">'+
+    '<div class="footer-cols">'+
+      col('關於我們', ['認識我們','人才招募','服務條款','隱私權政策','資訊安全政策','聯絡我們'])+
+      col('感感集團', ['股感 STOCKFEEL','房感 HOUSEFEEL','安錢感 CASHFEEL','保險感 INS.FEEL','檸檬商城 Lemongrocery'])+
+      col('會員服務', ['成為會員','會員登入','客服信箱'])+
+      col('商業服務', ['內容合作','業務合作'])+
+    '</div>'+
+    '<div class="footer-bottom"><div>寵物健康醫療網／105 台北市松山區民生東路三段135號6樓</div><div>©PetHealth. All rights reserved</div></div>'+
+  '</div>';
+}
+
+function renderTermsOfService(){
+  var sections = [
+    {h:'一、服務範圍', p:'寵物健康醫療網（以下稱「本網站」）提供寵物健康知識、就醫資訊、活動訊息與相關內容服務。使用者透過瀏覽器或行動裝置存取本網站，即表示同意遵守本服務條款之所有內容。'},
+    {h:'二、使用者責任', p:'使用者應遵守中華民國相關法令，不得利用本網站從事侵害他人權益或違反公共秩序之行為。使用者於本網站留言、上傳之內容，須自行負擔法律責任。'},
+    {h:'三、智慧財產權', p:'本網站所刊載之文字、圖片、影音等內容，其著作權及其他智慧財產權均屬本網站或原著作權人所有，未經授權不得任意轉載、重製或做其他商業用途。'},
+    {h:'四、免責聲明', p:'本網站提供之寵物健康相關資訊僅供參考，不能取代專業獸醫師之診斷與治療建議。如寵物出現健康異常狀況，請務必洽詢專業獸醫院所。'},
+    {h:'五、條款修改', p:'本網站保留隨時修改本服務條款之權利，修改後之條款將公告於本頁面，使用者若於修改後繼續使用本網站，視為同意修改後之條款內容。'},
+    {h:'六、聯絡方式', p:'如對本服務條款有任何疑問，歡迎透過網站客服信箱與我們聯繫。'}
+  ];
+  return ''+
+  '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<span class="current">服務條款</span></div>'+
+  '<div style="padding:16px 64px 0;"><h1 style="font-size:24px;margin:0;">服務條款</h1><div style="font-size:12px;color:#b0b0b0;margin-top:8px;">最後更新日期：2026.01.01（本頁為範例文字，正式條款內容請由法務／PO提供）</div></div>'+
+  '<div class="section" style="max-width:820px;padding-bottom:64px;">'+
+    sections.map(function(s){
+      return '<h2 style="font-size:17px;margin:28px 0 10px;">'+s.h+'</h2><p style="font-size:14px;color:#4a4a4a;line-height:1.9;margin:0;">'+s.p+'</p>';
+    }).join('')+
+  '</div>';
+}
+
+/* ---------- navigation / actions ---------- */
+function goTo(page, params){
+  state.headerMenu = null;
+  state.page = page;
+  if(params){
+    if(page==='articleList' && params.petType){
+      state.articleList.petType = params.petType;
+      state.articleList.page = 1;
+    }
+    if(page==='drugDetail' && typeof params.index==='number'){ state.drugDetail.index = params.index; }
+    if(page==='articleDetail'){ state.articleDetail.petType = params.petType || '狗狗健康'; }
+    if(page==='searchResults'){
+      state.searchResults.type = params.type || 'article';
+      state.searchResults.keyword = params.keyword || '';
+      state.searchResults.page = 1;
+    }
+  }
+  if(page==='eventList'){
+    state.eventList.category = (params && params.category) ? params.category : '活動好康';
+    state.eventList.page = 1;
+  }
+  render();
+  window.scrollTo(0,0);
+}
+function handleAction(action, arg){
+  if(action==='toggleHeaderMenu'){ state.headerMenu = state.headerMenu===arg?null:arg; return; }
+  if(action==='confirmExternal'){
+    var parts = arg.split('|');
+    state.headerMenu = null;
+    state.externalModal = { url: parts[0], label: parts[1] };
+    return;
+  }
+  if(action==='closeExternalModal'){ state.externalModal = null; return; }
+  if(action==='confirmOpenExternal'){
+    var target = state.externalModal;
+    state.externalModal = null;
+    if(target){ window.open(target.url, '_blank', 'noopener'); }
+    return;
+  }
+  if(action==='stub'){ return; }
+  if(action==='toggleClinicOpen'){ state.clinicList.open = state.clinicList.open===arg?null:arg; return; }
+  if(action==='selectClinicFilter'){ var p=arg.split(':'); state.clinicList[p[0]]=p[1]; state.clinicList.open=null; return; }
+  if(action==='setPage'){ var pg=arg.split(':'); setPath(pg[0], parseInt(pg[1],10)); return; }
+  if(action==='searchArticle'){ var kw1=document.getElementById('articleSearchInput').value.trim(); goTo('searchResults', {type:'article', keyword:kw1}); return; }
+  if(action==='searchDrug'){ var kw2=document.getElementById('drugSearchInput').value.trim(); goTo('searchResults', {type:'drug', keyword:kw2}); return; }
+  if(action==='setEventPage'){ state.eventList.page=parseInt(arg,10); return; }
+  if(action==='switchEventCategory'){ state.eventList.category=arg; state.eventList.page=1; return; }
+  if(action==='setToc'){ state.articleDetail.toc=parseInt(arg,10); return; }
+  if(action==='setImgDot'){ state.articleDetail.imgDot=parseInt(arg,10); return; }
+  if(action==='setClinicPhoto'){ state.clinicDetail.photo=parseInt(arg,10); return; }
+  if(action==='setDrugSearchArticleDot'){ state.drugSearch.articleDot=parseInt(arg,10); return; }
+  if(action==='setDrugBannerDot'){ state.drugDetail.bannerDot=parseInt(arg,10); return; }
+  if(action==='setDrugArticleDot'){ state.drugDetail.articleDot=parseInt(arg,10); return; }
+  if(action==='prevDrug'){ var len=DRUGS.length; state.drugDetail.index=(state.drugDetail.index-1+len)%len; return; }
+  if(action==='nextDrug'){ var len2=DRUGS.length; state.drugDetail.index=(state.drugDetail.index+1)%len2; return; }
+  if(action==='setAuthorBannerDot'){ state.authorPage.bannerDot=parseInt(arg,10); return; }
+  if(action==='calcSetPetType'){ state.ageCalc.petType=arg; state.ageCalc.showResult=false; return; }
+  if(action==='calcIncAge'){ state.ageCalc.age=Math.min(30,state.ageCalc.age+1); state.ageCalc.showResult=false; return; }
+  if(action==='calcDecAge'){ state.ageCalc.age=Math.max(1,state.ageCalc.age-1); state.ageCalc.showResult=false; return; }
+  if(action==='calcCompute'){
+    var c=state.ageCalc, human;
+    if(c.petType==='狗'){ human = c.age<=1 ? Math.round(c.age*12.5) : Math.round(14*Math.log(c.age)+31); }
+    else { human = c.age<=2 ? Math.round(c.age*12.5) : Math.round(25+(c.age-2)*4); }
+    c.showResult=true; c.result=Math.max(human,1);
+    return;
+  }
+}
+
+/* ---------- pages ---------- */
+function renderVideoPromo(){
+  return '<div class="video-promo"><div class="thumb"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.3"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div><div class="body"><div class="eyebrow">獸醫經驗談</div><div style="font-size:24px;font-weight:800;line-height:1.5;">獸醫經驗談：學習告別的勇氣</div><div style="font-size:13px;margin-top:10px;opacity:.85;">台大動物醫院｜李繼忠 獸醫師</div></div><div class="cta"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Watch on YouTube</div></div>'+
+  '<div style="text-align:center;font-size:13px;color:#6a6a6a;margin-top:14px;">獸醫經驗談：學習告別的勇氣</div><div style="text-align:center;font-size:12px;color:#b0b0b0;margin-top:4px;">影音來源｜YouTube 短影音頻道《你比較懂寵物》</div>';
+}
+
+function renderHome(){
+  function featureCard(){
+    return '<div class="card" style="cursor:default;"><div class="card-img feature">'+iconImg(34)+'</div><div class="card-body"><div class="card-title" style="font-size:17px;font-weight:700;">活動好康精選標題示意文字</div><div class="card-meta" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">文章摘要說明文字，最多顯示兩行，超過的部分將以刪節號顯示</div></div></div>';
+  }
+  return ''+
+  '<div class="section" style="padding-top:24px;"><div style="display:flex;align-items:center;gap:12px;padding:14px 20px;background:#f2f9f8;border-left:4px solid #00B2A9;border-radius:0 6px 6px 0;font-size:14px;"><span style="font-weight:700;color:#00877F;white-space:nowrap;">最新消息</span><span style="color:#4a4a4a;">2026年8月份會加各縣市免費巨犬病理循環追蹤行程</span></div></div>'+
+  '<div class="section"><div class="section-title"><h2>最新文章</h2><div class="rule"></div></div><div class="grid3">'+repeat(function(){return card('articleDetail');},6)+'</div></div>'+
+  '<div class="section"><div class="section-title"><h2>活動好康</h2><div class="rule"></div></div>'+
+    '<div style="display:flex;gap:32px;"><div style="flex:0 0 44%;">'+featureCard()+'</div>'+
+    '<div style="flex:1;display:flex;flex-direction:column;">'+repeat(function(){return '<div style="padding:14px 0;border-bottom:1px solid #eee;"><div class="card-title">活動標題活動標題活動標題文字說明</div><div class="card-meta" style="margin-top:6px;">2026.08.18</div></div>';},3)+'</div></div>'+
+  '</div>'+
+  '<div class="section">'+
+    '<h2 style="font-size:20px;margin:0 0 20px;">狗狗健康</h2>'+
+    '<div class="grid3">'+repeat(function(){return card('articleList',{petType:'狗狗健康'});},6)+'</div>'+
+    '<div style="text-align:center;margin-top:20px;"><a href="#" data-nav="articleList" data-params=\'{"petType":"狗狗健康"}\'>更多狗狗健康資訊 →</a></div>'+
+  '</div>'+
+  '<div class="section" style="background:#f7fbfb;">'+
+    '<h2 style="font-size:20px;margin:32px 0 20px;">貓咪健康</h2>'+
+    '<div class="grid3">'+repeat(function(){return card('articleList',{petType:'貓咪健康'});},6)+'</div>'+
+    '<div style="text-align:center;margin-top:20px;padding-bottom:32px;"><a href="#" data-nav="articleList" data-params=\'{"petType":"貓咪健康"}\'>更多貓咪健康資訊 →</a></div>'+
+  '</div>'+
+  '<div class="section"><div class="grid2" style="gap:48px;">'+
+    '<div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;"><h2 style="font-size:20px;margin:0;">兔子健康</h2><a href="#" data-nav="articleList" data-params=\'{"petType":"兔子健康"}\'>查看更多 →</a></div><div class="grid3" style="gap:16px;">'+repeat(function(){return card('articleList',{petType:'兔子健康'},{imgCls:'sq',iconSize:22,titleStyle:'font-size:13px;'});},3)+'</div></div>'+
+    '<div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;"><h2 style="font-size:20px;margin:0;">鳥類健康</h2><a href="#" data-nav="articleList" data-params=\'{"petType":"鳥類健康"}\'>查看更多 →</a></div><div class="grid3" style="gap:16px;">'+repeat(function(){return card('articleList',{petType:'鳥類健康'},{imgCls:'sq',iconSize:22,titleStyle:'font-size:13px;'});},3)+'</div></div>'+
+  '</div></div>'+
+  '<div class="section" style="padding-bottom:64px;"><div class="section-title"><h2>產業動態</h2><div class="rule"></div></div><div class="grid3">'+repeat(function(){return card('articleDetail');},3)+'</div></div>';
+}
+
+function renderHub(){
+  var CATS = ['狗狗健康','貓咪健康','兔子健康','鳥類健康'];
+  var sections = CATS.map(function(title){
+    return '<div style="margin-bottom:56px;">'+
+      '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:20px;"><h2 style="font-size:20px;margin:0;">'+title+'</h2><a href="#" data-nav="articleList" data-params=\''+JSON.stringify({petType:title})+'\'>Continue to the category →</a></div>'+
+      '<div class="grid3">'+repeat(function(){return card('articleList',{petType:title});},3)+'</div>'+
+    '</div>';
+  }).join('');
+  return '<div class="center-title"><h1>寵物健康</h1>'+wave()+'</div>'+
+    '<div class="section" style="padding-top:40px;padding-bottom:56px;">'+sections+'</div>';
+}
+
+function renderArticleList(){
+  var s = state.articleList;
+  var cfg = ARTICLE_CONFIG[s.petType];
+  return '<div class="section">'+
+    '<div class="section-title"><h2>'+cfg.tool+'</h2><div class="rule"></div></div>'+
+    '<div style="display:flex;gap:40px;margin-bottom:56px;">'+
+      '<div style="flex:0 0 240px;background:#f5f5f6;border-radius:8px;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(48)+'</div>'+
+      '<div style="flex:1;display:flex;flex-direction:column;gap:16px;">'+
+        '<p style="font-size:14px;color:#6a6a6a;line-height:1.8;margin:0;">'+cfg.desc+'</p>'+
+        '<div style="display:flex;gap:12px;"><input class="input" type="text" id="articleSearchInput" placeholder="請輸入關鍵字"><button class="btn-primary" data-action="searchArticle">搜尋</button></div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="section-title"><h2>'+s.petType+'專欄</h2><div class="rule"></div></div>'+
+    '<div class="grid3">'+repeat(function(){return card('articleDetail',{petType:s.petType});},6)+'</div>'+
+    pagination(s.page, 'articleList.page')+
+    (s.petType==='安寧照護' ? '<div style="margin:0 0 64px;">'+renderVideoPromo()+'</div>' : '')+
+  '</div>';
+}
+
+function renderArticleDetail(){
+  var s = state.articleDetail;
+  var tocLabels = ['目錄名稱一','目錄名稱二','目錄名稱三','目錄名稱四','目錄名稱五'];
+  var tocHtml = tocLabels.map(function(l,i){
+    return '<div data-action="setToc" data-arg="'+i+'" style="padding:8px 0;border-bottom:1px solid #f2f2f2;cursor:pointer;font-size:13px;color:'+(s.toc===i?'#00A79D':'#6a6a6a')+';font-weight:'+(s.toc===i?'600':'400')+';">'+l+'</div>';
+  }).join('');
+  var tableCols = repeat(function(){
+    return '<td style="padding:16px;border:1px solid #eee;vertical-align:top;min-width:200px;"><div style="font-weight:700;margin-bottom:8px;">Title</div><ul style="margin:0;padding-left:18px;color:#6a6a6a;line-height:1.9;"><li>特色重點示意文字</li><li>特色重點示意文字</li><li>特色重點示意文字</li></ul></td>';
+  },4);
+  var tagsList = ['豆漿','狗狗飲食','飲食禁忌','營養補充','獸醫建議','飼養知識'];
+  return ''+
+  '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<a href="#" data-nav="hub">寵物健康</a>'+iconCrumb()+'<a href="#" data-nav="articleList" data-params=\'{"petType":"'+s.petType+'"}\'>'+s.petType+'</a></div>'+
+  '<div style="padding:20px 64px 0;"><h1 style="font-size:28px;line-height:1.5;margin:0 0 16px;max-width:920px;">狗狗可以喝豆漿嗎？獸醫師解析豆漿的優缺點與飲用建議</h1>'+
+    '<div style="display:flex;align-items:center;gap:12px;font-size:13px;color:#9a9a9a;"><div data-nav="authorDetail" style="display:flex;align-items:center;gap:8px;cursor:pointer;"><div style="width:30px;height:30px;border-radius:50%;background:#e5e5e5;"></div><span style="color:#4a4a4a;">作者姓名</span></div><span>·</span><span>更新時間 2026/08/20</span><span>·</span><span style="color:#00A79D;">'+s.petType+'</span></div>'+
+  '</div>'+
+  '<div style="padding:32px 64px 0;"><div style="background:#f0f0f0;aspect-ratio:16/7;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;font-size:14px;">文章封面圖</div></div>'+
+  '<div style="padding:24px 64px 0;"><div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div></div>'+
+  '<div style="padding:48px 64px 0;display:flex;gap:48px;align-items:flex-start;flex-wrap:wrap;">'+
+    '<div style="flex:1;min-width:320px;">'+
+      '<h2 style="font-size:22px;margin:0 0 14px;">豆漿的營養價值：高品質植物蛋白來源</h2>'+
+      '<p style="font-size:15px;color:#3a3a3a;line-height:1.9;margin:0 0 28px;">豆漿富含植物性蛋白質與膳食纖維，被認為是對人體健康有益，但對於狗狗來說，是否真的能作為日常飲食的一環？事實上，大多數健康狗狗可以適量飲用豆漿，但須循序漸進地觀察其接受度。在選擇將豆漿納入狗狗飲食之前，了解其營養價值與潛在風險，是主人應具備的基本知識。</p>'+
+      '<h3 style="font-size:18px;margin:0 0 12px;">大多數健康犬可飲用，但建議從少量、稀釋開始</h3>'+
+      '<p style="font-size:15px;color:#3a3a3a;line-height:1.9;margin:0 0 28px;">對多數健康狗狗而言，適量飲用無糖豆漿是安全的：豆漿不僅能提供優質植物性蛋白，也能補充膳食纖維，有助於維持腸道機能。不過，由於每隻狗狗的體質與消化能力不同，建議飼主在首次嘗試餵食前先諮詢獸醫師意見；可先以清水稀釋豆漿後倒少量餵食，並在24小時內密切觀察是否出現異常反應。</p>'+
+      '<p style="font-size:14px;color:#9a9a9a;line-height:1.9;margin:0 0 28px;">常見的不良反應包括：皮膚搔癢、頻繁抓咬皮膚、紅疹、腹瀉、嘔吐，或食慾下降等。如有上述情形，應立即停止餵食並諮詢獸醫，避免反應惡化。</p>'+
+      '<div style="margin:0 0 32px;" class="table-wrap"><table class="ref" style="font-size:13px;"><tbody><tr>'+tableCols+'</tr></tbody></table></div>'+
+      '<div style="margin:0 0 32px;padding:20px 24px;background:#f7fbfb;border-left:4px solid #00B2A9;border-radius:0 8px 8px 0;font-size:14px;color:#4a4a4a;line-height:1.9;">對多數健康狗狗而言，適量飲用無糖豆漿是安全的：豆漿不僅能提供優質植物性蛋白，也能補充膳食纖維，有助於維持腸道機能。不過，由於每隻狗狗的體質與消化能力不同，建議飼主在首次嘗試餵食前先諮詢獸醫師意見。</div>'+
+      '<div style="margin:0 0 40px;"><div style="background:#f0f0f0;aspect-ratio:16/10;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;font-size:14px;">內文圖片</div><div style="text-align:center;font-size:13px;color:#9a9a9a;margin-top:10px;">圖片標題</div>'+dots(3, s.imgDot, 'setImgDot')+'</div>'+
+      '<div data-nav="authorDetail" style="margin:0 0 24px;border:1px solid #e8e8e8;border-radius:10px;padding:20px;display:flex;gap:16px;align-items:flex-start;cursor:pointer;"><div style="width:56px;height:56px;border-radius:50%;background:#e5e5e5;flex-shrink:0;"></div><div style="flex:1;"><div style="font-size:15px;font-weight:700;">作者名稱</div><div style="font-size:12px;color:#9a9a9a;margin:2px 0 10px;">作者職稱</div><div style="display:flex;gap:10px;margin-bottom:10px;">'+iconFb()+iconIg()+'</div><p style="font-size:13px;color:#6a6a6a;line-height:1.8;margin:0 0 10px;">作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介</p><a href="#">專欄看更多 →</a></div></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">'+tagsList.map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+'</div>'+
+      '<div style="display:flex;gap:12px;margin-bottom:32px;"><button class="btn-outline" style="flex:1;">LINE 分享</button><button class="btn-outline" style="flex:1;">Facebook 分享</button><button class="btn-outline" style="flex:1;">Instagram 分享</button></div>'+
+      '<div style="display:flex;gap:16px;margin-bottom:48px;"><div class="btn-outline" style="flex:1;text-align:left;cursor:default;">＜ 上一篇文章</div><div class="btn-outline" style="flex:1;text-align:right;cursor:default;">下一篇文章 ＞</div></div>'+
+      '<div style="margin-bottom:24px;"><h3 style="font-size:16px;margin:0 0 14px;">更多文章</h3><div style="display:flex;flex-direction:column;gap:10px;">'+repeat(function(){return '<a href="#" data-action="stub">文章名稱</a>';},3)+'</div></div>'+
+    '</div>'+
+    '<div style="flex:0 0 260px;position:sticky;top:86px;align-self:flex-start;"><div style="border:1px solid #eee;border-radius:8px;padding:20px;"><div style="font-size:14px;font-weight:700;margin-bottom:12px;">文章目錄</div>'+tocHtml+'</div></div>'+
+  '</div>';
+}
+
+function renderClinicList(){
+  var s = state.clinicList;
+  function filterBox(field, list, key){
+    var open = s.open===key;
+    var options = list.slice(1).map(function(v){return '<div class="dropdown-item" data-action="selectClinicFilter" data-arg="'+field+':'+v+'">'+v+'</div>';}).join('');
+    var labelMap = {region:'地區', service:'服務項目', pet:'寵物類型'};
+    return '<div class="dropdown" style="flex:1;"><div class="filter-box" data-action="toggleClinicOpen" data-arg="'+key+'"><span style="font-size:14px;"><span class="label">'+labelMap[key]+'</span>'+s[field]+'</span>'+iconChevronSm()+'</div>'+(open?'<div class="dropdown-menu" style="left:0;right:0;">'+options+'</div>':'')+'</div>';
+  }
+  return '<div class="section">'+
+    '<h1 style="font-size:22px;margin:0 0 24px;">動物醫院 院所總覽</h1>'+
+    '<div style="display:flex;gap:16px;margin-bottom:32px;">'+filterBox('region', CLINIC_REGIONS, 'region')+filterBox('service', CLINIC_SERVICES, 'service')+filterBox('pet', CLINIC_PETS, 'pet')+'<button class="btn-primary" style="white-space:nowrap;">立即搜尋</button></div>'+
+    '<div class="grid3">'+repeat(function(){return '<div class="card" data-nav="clinicDetail"><div class="card-img">'+iconImg(32)+'</div><div class="card-body"><div style="font-size:16px;font-weight:600;">院所名稱</div><div style="font-size:13px;color:#9a9a9a;">地點</div><span class="tag" style="width:fit-content;">寵物類型</span></div></div>';},6)+'</div>'+
+    pagination(s.page, 'clinicList.page')+
+  '</div>';
+}
+
+function renderClinicDetail(){
+  var s = state.clinicDetail;
+  return '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<a href="#" data-nav="medicalHub">就醫資訊</a>'+iconCrumb()+'<span class="current">院所名稱</span></div>'+
+  '<div style="padding:24px 64px 0;display:flex;gap:24px;"><div style="width:180px;height:180px;flex-shrink:0;background:#f5f5f6;border:1px solid #e8e8e8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(28)+'</div><div style="display:flex;flex-direction:column;gap:12px;padding-top:8px;"><h1 style="font-size:26px;margin:0;">診所名稱</h1><span class="tag" style="width:fit-content;">寵物類型</span><p style="font-size:14px;color:#6a6a6a;margin:0;max-width:640px;line-height:1.7;">診所簡介</p></div></div>'+
+  '<div class="section"><h2 style="font-size:18px;margin:0 0 20px;">聯絡資訊</h2><div class="grid2" style="row-gap:20px;column-gap:64px;">'+
+    '<div style="border-bottom:1px solid #eee;padding-bottom:12px;"><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">院所地址</div><div style="font-size:15px;">地址</div></div>'+
+    '<div style="border-bottom:1px solid #eee;padding-bottom:12px;"><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">聯絡電話</div><div style="font-size:15px;">電話號碼</div></div>'+
+    '<div style="border-bottom:1px solid #eee;padding-bottom:12px;"><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">官方網站</div><div style="font-size:15px;"><a href="#" data-action="stub">連結</a></div></div>'+
+    '<div style="border-bottom:1px solid #eee;padding-bottom:12px;"><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">電子信箱</div><div style="font-size:15px;">信箱地址</div></div>'+
+    '<div style="border-bottom:1px solid #eee;padding-bottom:12px;grid-column:span 2;"><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">社群網站</div><div style="font-size:15px;display:flex;gap:20px;"><a href="#" data-action="stub">Facebook</a><a href="#" data-action="stub">Instagram</a><a href="#" data-action="stub">Line</a></div></div>'+
+  '</div></div>'+
+  '<div class="section"><h2 style="font-size:18px;margin:0 0 20px;">院所照片</h2><div style="background:#f0f0f0;height:340px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;font-size:14px;">院所照片輪播</div><div style="text-align:center;font-size:13px;color:#9a9a9a;margin-top:12px;">圖片標題</div>'+dots(3, s.photo, 'setClinicPhoto')+'</div>'+
+  '<div class="section"><h2 style="font-size:18px;margin:0 0 8px;">地址</h2><div style="font-size:14px;color:#6a6a6a;margin-bottom:16px;">地址</div><div style="background:#eef0ef;height:260px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9aa39f;font-size:14px;">Google Map</div></div>'+
+  '<div class="section" style="padding-bottom:56px;"><h2 style="font-size:18px;margin:0 0 16px;">附近醫院</h2><div style="display:flex;flex-direction:column;gap:12px;font-size:14px;"><a href="#" data-action="stub">醫院名稱</a><a href="#" data-action="stub">醫院名稱</a><a href="#" data-action="stub">醫院名稱</a></div></div>';
+}
+
+function renderDrugSearch(){
+  var s = state.drugSearch;
+  return '<div class="section"><h1 style="font-size:22px;margin:0 0 24px;">動物用藥查詢</h1>'+
+    '<div style="display:flex;gap:16px;margin-bottom:40px;"><input class="input" type="text" id="drugSearchInput" placeholder="請輸入藥品關鍵字"><button class="btn-primary" style="white-space:nowrap;" data-action="searchDrug">立即搜尋</button></div>'+
+    '<h2 style="font-size:18px;margin:0 0 20px;">寵物藥品</h2><div class="grid3">'+repeat(function(i){return '<div class="card" data-nav="drugDetail" data-params=\'{"index":'+i+'}\'><div class="card-img">'+iconImg(30)+'</div><div class="card-body"><div style="font-size:16px;font-weight:600;">'+DRUGS[i]+'</div></div></div>';},3)+'</div>'+
+    pagination(s.page, 'drugSearch.page')+
+    '<h2 style="font-size:18px;margin:0 0 20px;">寵物健康文章</h2><div class="grid3">'+repeat(function(){return card();},3)+'</div>'+dots(3, s.articleDot, 'setDrugSearchArticleDot')+
+    '<div style="height:40px;"></div></div>';
+}
+
+function renderDrugDetail(){
+  var s = state.drugDetail;
+  var len = DRUGS.length, prevIdx=(s.index-1+len)%len, nextIdx=(s.index+1)%len;
+  return '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<a href="#" data-nav="drugSearch">動物用藥查詢</a>'+iconCrumb()+'<span class="current">'+DRUGS[s.index]+'</span></div>'+
+  '<div style="padding:24px 64px 0;display:flex;gap:24px;"><div style="width:160px;height:160px;flex-shrink:0;background:#f5f5f6;border:1px solid #e8e8e8;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(28)+'</div><div style="display:flex;flex-direction:column;gap:12px;padding-top:8px;"><h1 style="font-size:26px;margin:0;">'+DRUGS[s.index]+'</h1><p style="font-size:14px;color:#6a6a6a;margin:0;max-width:640px;line-height:1.7;">藥品簡介</p></div></div>'+
+  '<div class="section"><h2 style="font-size:18px;margin:0 0 20px;">藥品詳細資訊</h2><div class="grid2" style="row-gap:20px;column-gap:64px;">'+['適應症','成分','劑型','使用說明'].map(function(l){return '<div style="border-bottom:1px solid #eee;padding-bottom:12px;"><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">'+l+'</div><div style="font-size:15px;">'+l+'</div></div>';}).join('')+'</div></div>'+
+  '<div style="padding:32px 64px 0;display:flex;gap:16px;"><div class="btn-outline" style="flex:1;text-align:center;" data-action="prevDrug">＜ '+DRUGS[prevIdx]+'</div><div class="btn-outline" style="flex:1;text-align:center;" data-action="nextDrug">'+DRUGS[nextIdx]+' ＞</div></div>'+
+  '<div class="section"><div style="background:#e5e5e5;height:220px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:14px;">Horizontal Image Placeholder (1280 x 320)</div>'+dots(3, s.bannerDot, 'setDrugBannerDot')+'</div>'+
+  '<div class="section" style="padding-bottom:56px;"><h2 style="font-size:18px;margin:0 0 20px;">相關文章</h2><div class="grid3">'+repeat(function(){return card();},3)+'</div>'+dots(3, s.articleDot, 'setDrugArticleDot')+'</div>';
+}
+
+function renderSearchResults(){
+  var s = state.searchResults;
+  var isDrug = s.type==='drug';
+  var sourceLabel = isDrug ? '動物用藥查詢' : '寵物健康';
+  var sourceNav = isDrug ? 'drugSearch' : 'hub';
+  var hasKeyword = !!s.keyword;
+  var resultsHtml;
+  if(isDrug){
+    resultsHtml = '<div class="grid3">'+repeat(function(i){
+      var idx = i % DRUGS.length;
+      return '<div class="card" data-nav="drugDetail" data-params=\'{"index":'+idx+'}\'><div class="card-img">'+iconImg(30)+'</div><div class="card-body"><div style="font-size:16px;font-weight:600;">'+DRUGS[idx]+'</div></div></div>';
+    },6)+'</div>';
+  } else {
+    resultsHtml = '<div class="grid3">'+repeat(function(){return card('articleDetail');},9)+'</div>';
+  }
+  return ''+
+  '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<a href="#" data-nav="'+sourceNav+'">'+sourceLabel+'</a>'+iconCrumb()+'<span class="current">搜尋結果</span></div>'+
+  '<div style="padding:16px 64px 0;"><h1 style="font-size:24px;margin:0;">搜尋結果</h1></div>'+
+  (hasKeyword ?
+    '<div style="padding:12px 64px 0;font-size:14px;color:#6a6a6a;">「<span style="color:#00877F;font-weight:600;">'+s.keyword+'</span>」的搜尋結果，共 <span style="font-variant-numeric:tabular-nums;">'+(isDrug?6:9)+'</span> 筆（示意筆數，實際查詢邏輯待後端確認）</div>'+
+    '<div class="section">'+resultsHtml+pagination(s.page, 'searchResults.page')+'</div>'
+  :
+    '<div class="section" style="padding-bottom:64px;"><div style="max-width:480px;margin:24px auto 0;text-align:center;background:#f7fbfb;border-radius:8px;padding:32px;color:#6a6a6a;font-size:14px;line-height:1.8;">請輸入關鍵字進行搜尋，這裡會顯示符合條件的'+(isDrug?'藥品':'文章')+'清單。</div></div>'
+  );
+}
+
+function renderAuthorPage(){
+  var s = state.authorPage;
+  return '<div class="section"><h1 style="font-size:22px;margin:0 0 24px;">院所 &amp; 專家專欄</h1><div class="grid3">'+
+    repeat(function(){return '<div class="card" style="cursor:default;flex-direction:row;padding:20px;gap:16px;align-items:flex-start;display:flex;"><div style="width:88px;height:88px;flex-shrink:0;background:#f5f5f6;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(22)+'</div><div style="display:flex;flex-direction:column;gap:8px;"><div style="font-size:17px;font-weight:600;">姓名</div><span class="tag" style="width:fit-content;">科別</span><div style="font-size:13px;color:#9a9a9a;">醫生簡介</div></div></div>';},6)+
+    '</div>'+pagination(s.page, 'authorPage.page')+
+    '<div style="background:#e5e5e5;height:220px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:14px;">Horizontal Image Placeholder (1280 x 320)</div>'+dots(3, s.bannerDot, 'setAuthorBannerDot')+
+    '<div style="height:24px;"></div></div>';
+}
+
+function renderAuthorDetail(){
+  var s = state.authorDetail;
+  return '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<a href="#" data-nav="authorPage">院所＆專家專欄</a>'+iconCrumb()+'<span class="current">作者名稱</span></div>'+
+  '<div class="section">'+
+    '<div style="display:flex;gap:24px;align-items:flex-start;border-bottom:1px solid #eee;padding-bottom:32px;margin-bottom:32px;">'+
+      '<div style="width:120px;height:120px;border-radius:50%;background:#e5e5e5;flex-shrink:0;"></div>'+
+      '<div>'+
+        '<h1 style="font-size:24px;margin:0;">作者名稱</h1>'+
+        '<div style="font-size:14px;color:#9a9a9a;margin:6px 0 12px;">作者職稱</div>'+
+        '<div style="display:flex;gap:10px;margin-bottom:14px;">'+iconFb()+iconIg()+'</div>'+
+        '<p style="font-size:14px;color:#6a6a6a;line-height:1.8;margin:0;max-width:560px;">作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介作者簡介。</p>'+
+      '</div>'+
+    '</div>'+
+    '<div class="section-title"><h2>文章列表</h2><div class="rule"></div></div>'+
+    '<div class="grid3">'+repeat(function(){return card('articleDetail');},6)+'</div>'+
+    pagination(s.page, 'authorDetail.page')+
+    '<div style="text-align:center;margin-top:8px;padding-bottom:56px;"><a href="#" data-nav="authorPage">查看更多專欄作者 →</a></div>'+
+  '</div>';
+}
+
+function renderAgeCalc(){
+  var s = state.ageCalc;
+  return '<div class="center-title"><h1>寵物年齡計算機</h1>'+wave()+'</div>'+
+  '<div class="section" style="max-width:900px;margin:0 auto;"><h2 style="font-size:18px;margin:0 0 16px;text-align:center;">寵物年齡怎麼算？</h2>'+
+    '<p style="font-size:14px;color:#6a6a6a;line-height:1.9;margin:0 0 12px;">每種動物的生長速度不同，不僅簡單地用「一歲等於七歲」的公式來換算。這份工具是以下方公式簡易換算出寵物年齡對應的人類年齡：</p>'+
+    '<ul style="font-size:14px;color:#6a6a6a;line-height:2;margin:0;padding-left:20px;"><li>狗狗的年齡換算：1 歲以下的小狗，第一年約為 12.5 人歲來計算；1 歲以上的成犬，依照 14 × ln(狗狗年齡) + 31 進行換算。</li><li>貓咪的年齡換算：2 歲以內的小貓，最年輕 12.5 人歲、2 歲滿 25 人歲；2 歲以上的成貓，每增加 1 歲約對應 4 人歲增加。</li></ul>'+
+  '</div>'+
+  '<div class="section"><div style="max-width:520px;margin:0 auto;border:1px solid #e8e8e8;border-radius:12px;padding:32px;"><h2 style="font-size:18px;margin:0 0 20px;text-align:center;">寵物年齡計算機</h2>'+
+    '<div style="display:flex;flex-direction:column;gap:16px;">'+
+      '<div><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">選擇您的寵物類型：</div><select class="input" data-onchange="calcSetPetType"><option value="狗" '+(s.petType==='狗'?'selected':'')+'>狗</option><option value="貓" '+(s.petType==='貓'?'selected':'')+'>貓</option></select></div>'+
+      '<div><div style="font-size:13px;color:#9a9a9a;margin-bottom:6px;">輸入寵物年齡：</div><div style="display:flex;align-items:center;gap:12px;"><button class="btn-outline" style="width:36px;padding:8px;" data-action="calcDecAge">－</button><div style="flex:1;text-align:center;font-size:16px;border:1px solid #dcdcdc;border-radius:6px;padding:8px;">'+s.age+'</div><button class="btn-outline" style="width:36px;padding:8px;" data-action="calcIncAge">＋</button></div></div>'+
+      '<button class="btn-primary" data-action="calcCompute">計算對應人類年齡</button>'+
+      (s.showResult ? '<div style="text-align:center;font-size:16px;font-weight:700;color:#00877F;background:#f2f9f8;border-radius:6px;padding:14px;">約等於人類 '+s.result+' 歲</div>' : '')+
+    '</div></div></div>'+
+  '<div class="section"><h2 style="font-size:20px;margin:0 0 12px;">貓咪年齡對照表</h2><p style="font-size:14px;color:#6a6a6a;line-height:1.8;margin:0 0 20px;">透過這份貓咪年齡對照表，你可以掌握每個時期中貓咪身心健康的變化，延長貓咪的健康壽命。</p>'+refTable(['階段','貓齡','等同人類年齡'], CAT_ROWS, ['stage','age','human'])+'</div>'+
+  '<div class="section"><h2 style="font-size:20px;margin:0 0 12px;">狗狗年齡對照表</h2><p style="font-size:14px;color:#6a6a6a;line-height:1.8;margin:0 0 20px;">不同體型的老化速度不同，透過這份對照表，飼主能更客觀掌握愛犬的老化進程。</p>'+refTable(['年齡','小型犬','中型犬','大型犬'], DOG_ROWS, ['age','small','medium','large'])+'<div style="text-align:right;font-size:12px;color:#b0b0b0;margin-top:8px;">對照表為示意數值，實際換算依犬種略有差異</div></div>'+
+  '<div class="section"><h2 style="font-size:20px;margin:0 0 20px;">寵物健康文章</h2><div class="grid3">'+repeat(function(){return card();},6)+'</div><div style="text-align:center;margin-top:24px;"><button class="btn-outline">更多文章 ›</button></div></div>'+
+  '<div class="section" style="padding-bottom:56px;">'+
+    '<div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div>'+
+  '</div>';
+}
+
+function renderFeeStandard(){
+  return '<div class="center-title"><h1>全台各縣市動物醫院診療費用標準懶人包</h1></div>'+
+  '<div class="section" style="text-align:center;max-width:700px;margin:0 auto;"><p style="font-size:14px;color:#6a6a6a;line-height:2;margin:0;">按照《獸醫師法》規定，動物醫院必須公布收費標準<br>寵物健康醫療網整理各縣市動物醫院診療費用標準<br>其他縣市收費依單可參考各縣市獸醫師公會公告</p><div style="font-size:13px;color:#b0b0b0;margin-top:6px;">（更新日期：2025.10.20）</div></div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">掛號費及診療費</h2>'+groupedTable(RAW_TABLE_1)+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">檢查費</h2>'+groupedTable(RAW_TABLE_2)+'</div>'+
+  '<div class="section" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">'+
+    ['寵物急診分級','掛號及診療流程','常見血液檢驗數值','常見皮膚疾病流程'].map(function(t){return '<span class="tag">'+t+'</span>';}).join('')+
+  '</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">治療費</h2>'+groupedTable(RAW_TABLE_3)+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">預防接種</h2>'+groupedTable(RAW_TABLE_4)+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">住院費</h2>'+groupedTable(RAW_TABLE_5)+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">其他費用</h2>'+groupedTable(RAW_TABLE_6)+'<div style="text-align:right;font-size:12px;color:#b0b0b0;margin-top:8px;">以上費用皆為區間示意數值，非實際公告資料，正式上線前請以各院所／獸醫師公會公告為準</div></div>'+
+  '<div class="section" style="display:flex;gap:48px;align-items:flex-start;">'+
+    '<div style="flex:1;"><h2 style="font-size:20px;margin:0 0 20px;">更多寵物健康資訊</h2><div class="grid3">'+repeat(function(){return card();},3)+'</div></div>'+
+    '<div style="flex:0 0 300px;"><h2 style="font-size:20px;margin:0 0 20px;">各縣市獸醫師公會連結</h2><div class="grid2" style="gap:12px;">'+
+      CITY_LABELS.map(function(c){return '<div style="border:1px solid #00A79D;color:#00A79D;border-radius:20px;padding:10px 16px;text-align:center;font-size:13px;">'+c+'獸醫師公會網站</div>';}).join('')+
+    '</div></div>'+
+  '</div>'+
+  '<div class="section" style="padding-bottom:56px;"><div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div></div>';
+}
+function renderLabValues(){
+  var s = state.labValues;
+  return '<div class="center-title"><h1>寵物檢驗數值標準</h1>'+wave()+'</div>'+
+  '<div class="section" style="text-align:center;max-width:700px;margin:0 auto;"><p style="font-size:14px;color:#6a6a6a;line-height:2;margin:0;">血液及生化檢驗是評估寵物健康狀況及診斷疾病的重要工具<br>此頁面整理寵物常見血液及生化檢驗標準參考值</p>'+
+    '<div style="margin-top:20px;background:#f7fbfb;border-radius:8px;padding:16px 24px;font-size:13px;color:#4a4a4a;line-height:1.9;">'+
+      '<div style="color:#00877F;font-weight:700;margin-bottom:6px;">／ 請注意 ／</div>'+
+      '<div>檢驗的正常參考範圍可能會因年齡、性別、品種及實驗室設備與分析方法的不同而有所差異</div>'+
+      '<div>解讀時建議參考檢驗報告附帶的正常值範圍</div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">血清生化檢驗</h2>'+refTable(['檢驗項目','單位','狗','貓'], CHEM_ROWS, ['name','unit','dog','cat'])+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">血液氣體分析</h2>'+refTable(['測量項目','單位','狗','貓'], BLOOD_GAS_ROWS, ['name','unit','dog','cat'])+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">血液常規檢查（CBC）</h2>'+refTable(['測量項目','單位','狗','貓'], CBC_ROWS, ['name','unit','dog','cat'])+'</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:20px;margin:0 0 20px;">肛溫測量</h2>'+refTable(['寵物','肛溫 °C'], RECTAL_TEMP_ROWS, ['pet','temp'])+
+    '<div style="text-align:right;font-size:12px;color:#b0b0b0;margin-top:8px;">參考值依動物種類、年齡與檢驗儀器略有差異，僅供參考</div></div>'+
+  '<div class="section" style="padding-bottom:56px;"><h2 style="font-size:20px;margin:0 0 20px;">寵物健康</h2><div class="grid3">'+repeat(function(){return card();},6)+'</div>'+
+    pagination(s.page, 'labValues.page')+
+  '</div>'+
+  '<div class="section" style="padding-bottom:56px;"><div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div></div>';
+}
+function renderPetInsurance(){
+  return '<div class="center-title"><h1>2026年全台寵物險方案比較，4家寵物險優缺點懶人包比較一次看！</h1></div>'+
+  '<div class="section" style="text-align:center;max-width:700px;margin:0 auto;"><p style="font-size:14px;color:#6a6a6a;line-height:2;margin:0;">2026年寵物保險的熱門選擇包括<br>國泰產險寵物險、富邦產險毛起來愛4.0寵物險<br>易安網旺旺友聯寵物保險以及明台產物寵物綜合保險<br>以下整理各家保險方案，供飼主參考</p></div>'+
+  '<div class="center-title" style="padding-top:32px;"><h2 style="font-size:22px;margin:0;">寵物險方案比較</h2>'+wave()+'</div>'+
+  '<div style="text-align:center;font-size:13px;color:#9a9a9a;margin-top:4px;">（手機瀏覽可下滑查看卡片版比較表）</div>'+
+  '<div class="section">'+insTableHTML()+'</div>'+
+  '<div class="section" style="max-width:900px;margin:0 auto;">'+[0,1,2,3].map(function(i){return insCompanyCard(i);}).join('')+'</div>'+
+  '<div class="section"><div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div></div>'+
+  '<div class="section" style="max-width:900px;margin:0 auto;">'+
+    '<p style="font-size:14px;color:#6a6a6a;line-height:1.9;">以下為寵物健康醫療網整理2026年四家熱門寵物保險方案的優缺點比較，協助飼主快速掌握各方案特色：</p>'+
+    INS_PROS_CONS.map(function(c){
+      return '<p style="font-size:15px;font-weight:700;margin:20px 0 8px;">【'+c.name+'】</p>'+
+        '<p style="font-size:14px;color:#4a4a4a;line-height:1.8;margin:0 0 6px;">＞ 優點：'+c.pros+'</p>'+
+        '<p style="font-size:14px;color:#4a4a4a;line-height:1.8;margin:0;">＞ 缺點：'+c.cons+'</p>';
+    }).join('')+
+    '<p style="font-size:14px;color:#6a6a6a;line-height:1.9;margin-top:20px;">建議飼主依照毛孩年齡、健康狀況與預算彈性，選擇最符合需求的寵物保險方案。</p>'+
+  '</div>'+
+  '<div class="center-title" style="padding-top:24px;"><h2 style="font-size:22px;margin:0;">寵物險常見問題</h2>'+wave()+'</div>'+
+  '<div class="section" style="max-width:900px;margin:0 auto;padding-bottom:8px;">'+
+    INS_FAQ.map(function(f,i){
+      return '<h3 style="font-size:17px;margin:'+(i===0?'0':'28px')+' 0 8px;">Q'+(i+1)+'. '+f.q+'</h3><p style="font-size:14px;color:#4a4a4a;line-height:1.8;margin:0;">'+f.a+'</p>';
+    }).join('')+
+  '</div>'+
+  '<div class="center-title" style="padding-top:24px;"><h2 style="font-size:22px;margin:0;">2026年寵物險政府補助</h2>'+wave()+'</div>'+
+  '<div class="section" style="max-width:900px;margin:0 auto;">'+
+    INS_SUBSIDIES.map(function(sd){
+      return '<h3 style="font-size:16px;border-left:4px solid #00B2A9;padding-left:10px;margin:24px 0 12px;">'+sd.city+'</h3>'+
+        '<p style="font-size:14px;color:#4a4a4a;line-height:1.8;margin:0 0 6px;"><b>實施日期：</b>'+sd.date+'</p>'+
+        '<p style="font-size:14px;color:#4a4a4a;line-height:1.8;margin:0 0 6px;"><b>實施對象：</b>'+sd.target+'</p>'+
+        '<p style="font-size:14px;color:#4a4a4a;line-height:1.8;margin:0 0 6px;"><b>補助金額：</b>'+sd.amount+'</p>'+
+        '<p style="font-size:14px;line-height:1.8;margin:0;"><b>補助連結：</b><a href="#" data-action="stub">'+sd.link+'</a></p>';
+    }).join('')+
+  '</div>'+
+  '<div class="section"><h2 style="text-align:center;font-size:22px;margin:0 0 24px;">寵物險詳細介紹</h2>'+
+    '<div class="grid3">'+INS_INTRO_CARDS.map(function(t){return card('articleDetail',{},{title:t,meta:''});}).join('')+'</div>'+
+  '</div>'+
+  '<div class="section" style="padding-bottom:56px;"><div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div></div>';
+}
+
+function renderMedicalHub(){
+  var s = state.medicalHub;
+  function articleRow(){
+    return '<div style="display:flex;gap:20px;padding:20px 0;border-bottom:1px solid #eee;"><div style="width:160px;height:110px;flex-shrink:0;background:#f5f5f6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(26)+'</div><div><div class="card-title" style="font-size:16px;">文章標題文章標題文章標題文章標題文章標題</div><div class="card-meta" style="margin:6px 0;">2026.08.16</div><div style="font-size:13px;color:#6a6a6a;line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字。</div></div></div>';
+  }
+  return ''+
+  '<div class="section" style="display:flex;gap:24px;">'+
+    '<div style="flex:1;border:1px solid #e8e8e8;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:14px;">'+
+      '<div style="background:#f5f5f6;border-radius:8px;height:140px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(40)+'</div>'+
+      '<h2 style="font-size:22px;margin:0;">收費標準</h2><div style="font-size:14px;color:#6a6a6a;">動物醫院診療費用標準</div>'+
+      '<button data-nav="feeStandard" style="align-self:flex-start;background:#E8834D;color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;">立即查詢 →</button>'+
+    '</div>'+
+    '<div style="flex:1;border:1px solid #e8e8e8;border-radius:12px;padding:32px;display:flex;flex-direction:column;gap:14px;">'+
+      '<div style="background:#f5f5f6;border-radius:8px;height:140px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(40)+'</div>'+
+      '<h2 style="font-size:22px;margin:0;">院所查詢</h2><div style="font-size:14px;color:#6a6a6a;">獸醫院所／24小時急診</div>'+
+      '<button data-nav="clinicList" style="align-self:flex-start;background:#00B2A9;color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;">立即查詢 →</button>'+
+    '</div>'+
+  '</div>'+
+  '<div class="center-title" style="padding-top:40px;"><h2 style="font-size:22px;margin:0;">推薦文章</h2>'+wave()+'</div>'+
+  '<div class="section"><div class="grid3">'+repeat(function(){return card('articleDetail');},6)+'</div></div>'+
+  '<div class="section" style="padding-bottom:64px;">'+
+    '<div class="section-title"><h2>最新文章</h2><div class="rule"></div></div>'+
+    repeat(articleRow,3)+
+    '<div class="section-title" style="margin-top:32px;"><h2>其他人正在看</h2><div class="rule"></div></div>'+
+    repeat(articleRow,3)+
+    pagination(s.page, 'medicalHub.page')+
+    '<div style="margin-top:48px;"><div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div></div>'+
+  '</div>';
+}
+
+function renderEventList(){
+  var s = state.eventList;
+  var total = EVENT_CATEGORIES[s.category] || 5;
+  var pages = total<=5 ? Array.from({length:total},function(_,i){return i+1;}) : [1,2,3,'...',total];
+  var isSub = s.category!=='活動好康';
+  var catSwitcher = EVENT_CATEGORY_LIST.map(function(l){
+    return '<option value="'+l+'" '+(l===s.category?'selected':'')+'>'+l+'</option>';
+  }).join('');
+  return ''+
+  '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+
+    (isSub ? '<a href="#" data-nav="eventList" data-params=\'{"category":"活動好康"}\'>活動好康</a>'+iconCrumb()+'<span class="current">'+s.category+'</span>' : '<span class="current">活動好康</span>')+
+  '</div>'+
+  '<div style="padding:16px 64px 0;display:flex;align-items:center;justify-content:space-between;">'+
+    '<h1 style="font-size:26px;margin:0;">'+s.category+'</h1>'+
+    '<div style="display:flex;align-items:center;gap:12px;">'+
+      '<select class="input" style="width:auto;display:inline-block;" data-onchange="switchEventCategory">'+catSwitcher+'</select>'+
+      '<div style="border:1px solid #dcdcdc;border-radius:6px;padding:8px 16px;font-size:13px;color:#4a4a4a;display:flex;align-items:center;gap:6px;">最新文章'+iconChevronSm()+'</div>'+
+    '</div>'+
+  '</div>'+
+  '<div style="padding:24px 64px 0;">'+
+    repeat(function(){
+      return '<div style="display:flex;gap:24px;padding:24px 0;border-top:1px solid #eee;"><div style="width:200px;height:130px;flex-shrink:0;background:#f5f5f6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#b3b3b3;">'+iconImg(30)+'</div><div><div class="card-title" style="font-size:18px;">'+s.category+'文章標題'+s.category+'文章標題</div><div class="card-meta" style="font-size:13px;margin:8px 0;">2026 年 7 月 15 日</div><div style="font-size:14px;color:#6a6a6a;line-height:1.8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字摘要文字。</div></div></div>';
+    },10)+
+  '</div>'+
+  '<div style="padding:16px 64px 56px;display:flex;align-items:center;justify-content:center;gap:8px;">'+
+    pages.map(function(p){
+      var isEllipsis = p==='...';
+      var active = s.page===p;
+      return '<button '+(isEllipsis?'':'data-action="setEventPage" data-arg="'+p+'"')+' style="width:32px;height:32px;border-radius:6px;border:none;font-size:14px;cursor:'+(isEllipsis?'default':'pointer')+';background:'+(active?'#00B2A9':'none')+';color:'+(active?'#fff':(isEllipsis?'#c0c0c0':'#4a4a4a'))+';">'+p+'</button>';
+    }).join('')+
+  '</div>';
+}
+
+function renderIndustryHub(){
+  var s = state.industryHub;
+  return ''+
+  '<div class="breadcrumb"><a href="#" data-nav="home">Home</a>'+iconCrumb()+'<span class="current">產業動態</span></div>'+
+  '<div class="center-title" style="padding-top:24px;"><h1>產業動態</h1>'+wave()+'</div>'+
+  '<div class="section"><div class="grid3">'+repeat(function(){return card('articleDetail');},9)+'</div>'+
+    pagination(s.page, 'industryHub.page')+
+  '</div>'+
+  '<div class="section" style="padding-bottom:64px;">'+
+    '<div style="background:#e5e5e5;height:120px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#9a9a9a;font-size:13px;">廣告版位</div>'+
+  '</div>';
+}
+
+function renderVideoHub(){
+  var sections = VIDEO_SECTIONS.map(function(sec){
+    return '<div class="section">'+
+      '<div class="center-title"><h2 style="font-size:22px;margin:0;">'+sec.title+'</h2>'+wave()+'</div>'+
+      '<div class="grid3" style="margin-top:32px;">'+sec.videos.map(videoCard).join('')+'</div>'+
+    '</div>';
+  }).join('');
+  return ''+
+  sections+
+  '<div class="section"><div style="text-align:center;font-size:13px;color:#9a9a9a;font-style:italic;padding:24px;background:#eef1f0;border-radius:8px;">— 影片來源：YouTube 獸醫療心室（原文為「經法國皇家授權使用」，語意不明，疑似誤植，待PO確認正確用語）—</div></div>'+
+  '<div class="section" style="padding-bottom:64px;"><div class="center-title"><h2 style="font-size:22px;margin:0;">熱門文章</h2>'+wave()+'</div><div class="grid3" style="margin-top:32px;">'+repeat(function(){return card();},6)+'</div></div>';
+}
+
+function renderAboutUs(){
+  var visionCards = ABOUT_VISION_CARDS.map(function(c){
+    return '<div style="text-align:center;padding:0 16px;"><div style="background:#f5f5f6;border-radius:8px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:#b3b3b3;margin-bottom:16px;">'+iconImg(36)+'</div><div style="font-size:16px;font-weight:700;margin-bottom:8px;">'+c.title+'</div><div style="font-size:13px;color:#6a6a6a;line-height:1.8;">'+c.desc+'</div></div>';
+  }).join('');
+  var partnerLogos = ABOUT_PARTNERS.map(function(p){
+    return '<div style="flex:1;min-width:160px;height:70px;background:#f5f5f6;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#6a6a6a;text-align:center;padding:8px;">'+p+'</div>';
+  }).join('');
+  function eyebrow(en, zh){
+    return '<div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:#c7c7c7;letter-spacing:1px;">'+en+'</div><h2 style="font-size:22px;margin:8px 0 0;">'+zh+'</h2><div style="width:48px;height:3px;background:#00B2A9;margin:12px auto 0;"></div></div>';
+  }
+  return ''+
+  '<div style="background:linear-gradient(135deg,#eaf4f3,#f4f9f8);padding:64px 64px;text-align:center;position:relative;overflow:hidden;">'+
+    '<div style="font-size:48px;font-weight:800;color:#7fa8a3;">About Us</div>'+
+    '<div style="font-size:18px;color:#4a4a4a;margin-top:12px;">關於我們</div>'+
+  '</div>'+
+
+  '<div class="section" style="max-width:820px;margin:0 auto;">'+
+    eyebrow('OUR VALUE','核心理念')+
+    '<p style="font-size:14px;color:#6a6a6a;line-height:1.9;text-align:center;margin:20px 0 40px;">致力於打造台灣最健全的寵物專屬健康平台，提供最新的醫療指引、寵物健康知識與產業動態。</p>'+
+    '<div style="display:flex;justify-content:center;gap:80px;padding-bottom:24px;">'+
+      '<div style="text-align:center;"><div style="font-size:40px;font-weight:800;color:#9fd0cb;">250000</div><div style="font-size:13px;color:#6a6a6a;margin-top:8px;">文章瀏覽／月</div></div>'+
+      '<div style="text-align:center;"><div style="font-size:40px;font-weight:800;color:#9fd0cb;">1500</div><div style="font-size:13px;color:#6a6a6a;margin-top:8px;">專業文章</div></div>'+
+    '</div>'+
+  '</div>'+
+
+  '<div style="max-width:820px;margin:0 auto;border-top:1px solid #eee;"></div>'+
+
+  '<div class="section" style="max-width:900px;margin:0 auto;">'+
+    eyebrow('OUR VISION','公司願景')+
+    '<p style="font-size:14px;color:#6a6a6a;line-height:1.9;text-align:center;margin:20px 0 40px;">提供全方位寵物健康解決方案，讓醫學更貼近生活，打造一站式寵物健康、醫療、產業及活動資訊整合平台。</p>'+
+    '<div class="grid3">'+visionCards+'</div>'+
+  '</div>'+
+
+  '<div style="max-width:900px;margin:0 auto;border-top:1px solid #eee;"></div>'+
+
+  '<div class="section" style="max-width:1100px;margin:0 auto;">'+
+    eyebrow('OUR PARTNERS','合作企業')+
+    '<div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:32px;">'+partnerLogos+'</div>'+
+  '</div>'+
+
+  '<div style="max-width:820px;margin:0 auto;border-top:1px solid #eee;"></div>'+
+
+  '<div class="section" style="max-width:820px;margin:0 auto;padding-bottom:64px;text-align:center;">'+
+    eyebrow('CONTACT','合作洽詢')+
+    '<div style="font-size:14px;color:#4a4a4a;margin-top:24px;line-height:2;">投稿、內容轉載、行銷合作：werther.chang@stockfeel.com.tw<br>客服時間：週一至週五 10:00 – 19:00</div>'+
+  '</div>';
+}
+
+var PAGES = {
+  home: renderHome, hub: renderHub, articleList: renderArticleList, articleDetail: renderArticleDetail,
+  clinicList: renderClinicList, clinicDetail: renderClinicDetail, drugSearch: renderDrugSearch, drugDetail: renderDrugDetail,
+  authorPage: renderAuthorPage, authorDetail: renderAuthorDetail, ageCalc: renderAgeCalc, feeStandard: renderFeeStandard, labValues: renderLabValues, petInsurance: renderPetInsurance,
+  medicalHub: renderMedicalHub, eventList: renderEventList, industryHub: renderIndustryHub, videoHub: renderVideoHub, aboutUs: renderAboutUs,
+  searchResults: renderSearchResults, termsOfService: renderTermsOfService
+};
+
+/* ---------- render loop / init ---------- */
+function renderExternalModal(){
+  var m = state.externalModal;
+  return '<div style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:200;">'+
+    '<div style="background:#fff;border-radius:10px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.2);">'+
+      '<div style="font-size:16px;font-weight:700;margin-bottom:12px;">即將前往外部網站</div>'+
+      '<div style="font-size:14px;color:#6a6a6a;line-height:1.7;margin-bottom:10px;">您即將離開寵物健康醫療網，前往「'+m.label+'」外部網站：</div>'+
+      '<div style="font-size:13px;color:#00A79D;word-break:break-all;margin-bottom:24px;">'+m.url+'</div>'+
+      '<div style="display:flex;gap:12px;">'+
+        '<button class="btn-outline" style="flex:1;" data-action="closeExternalModal">取消</button>'+
+        '<button class="btn-primary" style="flex:1;" data-action="confirmOpenExternal">繼續前往</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function render(){
+  var fn = PAGES[state.page] || PAGES.home;
+  var modalHtml = state.externalModal ? renderExternalModal() : '';
+  document.getElementById('app').innerHTML = '<div class="wrap">'+renderHeader()+fn()+renderFooter()+'</div>'+modalHtml;
+}
+
+document.getElementById('app').addEventListener('click', function(e){
+  var act = e.target.closest('[data-action]');
+  if(act){ e.preventDefault(); handleAction(act.dataset.action, act.dataset.arg); render(); return; }
+  var nav = e.target.closest('[data-nav]');
+  if(nav){ e.preventDefault(); var params = nav.dataset.params ? JSON.parse(nav.dataset.params) : null; goTo(nav.dataset.nav, params); return; }
+});
+document.getElementById('app').addEventListener('change', function(e){
+  var el = e.target.closest('[data-onchange]');
+  if(el){ handleAction(el.dataset.onchange, e.target.value); render(); }
+});
+render();
+
+})();
+</script>
